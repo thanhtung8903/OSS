@@ -1,0 +1,139 @@
+package com.example.oss.repository;
+
+import android.app.Application;
+import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
+import com.example.oss.database.AppDatabase;
+import com.example.oss.dao.UserDao;
+import com.example.oss.entity.User;
+import java.util.List;
+import java.util.Date;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import com.example.oss.util.SecurityUtils;
+
+public class UserRepository {
+    private UserDao userDao;
+    private LiveData<List<User>> allUsers;
+    private ExecutorService executor;
+    private MutableLiveData<User> currentUser;
+
+    public UserRepository(Application application) {
+        AppDatabase database = AppDatabase.getDatabase(application);
+        userDao = database.userDao();
+        allUsers = userDao.getAllUsers();
+        executor = Executors.newFixedThreadPool(2);
+        currentUser = new MutableLiveData<>();
+    }
+
+    // Read operations
+    public LiveData<List<User>> getAllUsers() {
+        return allUsers;
+    }
+
+    public LiveData<User> getUserById(int id) {
+        return userDao.getUserById(id);
+    }
+
+    public LiveData<User> getCurrentUser() {
+        return currentUser;
+    }
+
+    // Authentication methods
+    public Future<User> login(String email, String password) {
+        return executor.submit(() -> {
+            String hashedPassword = SecurityUtils.hashPassword(password);
+            User user = userDao.login(email, hashedPassword);
+            if (user != null) {
+                currentUser.postValue(user);
+            }
+            return user;
+        });
+    }
+
+    public Future<Boolean> register(String fullName, String email, String password, String phoneNumber) {
+        return executor.submit(() -> {
+            // Kiểm tra email đã tồn tại
+            User existingUser = userDao.getUserByEmail(email);
+            if (existingUser != null) {
+                return false; // Email đã tồn tại
+            }
+
+            // Tạo user mới
+            String hashedPassword = SecurityUtils.hashPassword(password);
+            User newUser = new User(fullName, email, hashedPassword, phoneNumber, "customer", "active");
+            newUser.setCreatedAt(new Date());
+
+            long userId = userDao.insertUser(newUser);
+            return userId > 0;
+        });
+    }
+
+    public void logout() {
+        currentUser.postValue(null);
+    }
+
+    public Future<Boolean> changePassword(int userId, String oldPassword, String newPassword) {
+        return executor.submit(() -> {
+            User user = userDao.getUserById(userId).getValue();
+            if (user != null && user.getPassword().equals(SecurityUtils.hashPassword(oldPassword))) {
+                user.setPassword(SecurityUtils.hashPassword(newPassword));
+                userDao.updateUser(user);
+                return true;
+            }
+            return false;
+        });
+    }
+
+    // Write operations
+    public void insertUser(User user) {
+        executor.execute(() -> userDao.insertUser(user));
+    }
+
+    public void updateUser(User user) {
+        executor.execute(() -> {
+            userDao.updateUser(user);
+            // Cập nhật current user nếu đang login
+            if (currentUser.getValue() != null &&
+                    currentUser.getValue().getId() == user.getId()) {
+                currentUser.postValue(user);
+            }
+        });
+    }
+
+    public void deleteUser(User user) {
+        executor.execute(() -> userDao.deleteUser(user));
+    }
+
+    // Business logic methods
+    public void updateUserProfile(int userId, String fullName, String phoneNumber) {
+        executor.execute(() -> {
+            User user = userDao.getUserById(userId).getValue();
+            if (user != null) {
+                user.setFullName(fullName);
+                user.setPhoneNumber(phoneNumber);
+                updateUser(user);
+            }
+        });
+    }
+
+    public void changeUserStatus(int userId, String status) {
+        executor.execute(() -> {
+            User user = userDao.getUserById(userId).getValue();
+            if (user != null) {
+                user.setStatus(status);
+                updateUser(user);
+            }
+        });
+    }
+
+    // Validation methods
+    public boolean isValidPassword(String password) {
+        return SecurityUtils.isPasswordStrong(password);
+    }
+
+    public boolean isValidEmail(String email) {
+        return SecurityUtils.isValidEmail(email);
+    }
+}
