@@ -101,10 +101,15 @@ Standardized PR template with checklists for:
 
 ## 🔧 Configuration
 
-All workflows use:
+All workflows use latest versions:
 
 - **JDK 11** (Temurin distribution)
-- **Gradle caching** for faster builds
+- **actions/checkout@v4**
+- **actions/setup-java@v4**
+- **actions/cache@v4** for Gradle caching
+- **actions/upload-artifact@v4** for APK uploads
+- **actions/github-script@v7** for PR comments
+- **softprops/action-gh-release@v2** for releases
 - **Artifact retention** (7-30 days)
 - **Automatic permissions** via GITHUB_TOKEN
 
@@ -116,3 +121,18 @@ After successful builds:
 2. Scroll to "Artifacts" section
 3. Download the APK file
 4. Install on Android device (enable unknown sources)
+
+## 🆕 Recent Updates
+
+- ✅ Updated to `actions/upload-artifact@v4` (latest version)
+- ✅ Updated to `actions/cache@v4` for better performance
+- ✅ Updated to `actions/github-script@v7` for PR comments
+- ✅ Updated to `softprops/action-gh-release@v2` for releases
+- ✅ All deprecated actions have been replaced
+
+## 🚨 Important Notes
+
+- All workflows now use the latest action versions
+- No more deprecation warnings
+- Improved performance with updated caching
+- Better artifact handling with v4 upload action
