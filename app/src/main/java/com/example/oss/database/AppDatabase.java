@@ -48,7 +48,7 @@ public abstract class AppDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(
                             context.getApplicationContext(),
                             AppDatabase.class,
-                            "oss_database").build();
+                            "oss_database.db").build();
                 }
             }
         }

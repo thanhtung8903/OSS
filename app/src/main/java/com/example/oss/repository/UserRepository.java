@@ -12,6 +12,8 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import com.example.oss.util.SecurityUtils;
+import com.example.oss.util.UserRole;
+import com.example.oss.util.UserStatus;
 
 public class UserRepository {
     private UserDao userDao;
@@ -43,30 +45,39 @@ public class UserRepository {
     // Authentication methods
     public Future<User> login(String email, String password) {
         return executor.submit(() -> {
-            String hashedPassword = SecurityUtils.hashPassword(password);
-            User user = userDao.login(email, hashedPassword);
-            if (user != null) {
-                currentUser.postValue(user);
+            try {
+                User user = userDao.getUserByEmail(email);
+                if (user != null && SecurityUtils.verifyPassword(password, user.getPassword())) {
+                    return user;
+                }
+                return null;
+            } catch (Exception e) {
+                return null;
             }
-            return user;
         });
     }
 
     public Future<Boolean> register(String fullName, String email, String password, String phoneNumber) {
         return executor.submit(() -> {
-            // Kiểm tra email đã tồn tại
-            User existingUser = userDao.getUserByEmail(email);
-            if (existingUser != null) {
-                return false; // Email đã tồn tại
+            try {
+                // Hash password
+                String hashedPassword = SecurityUtils.hashPassword(password);
+
+                // Create new user with customer role
+                User newUser = new User(
+                        fullName,
+                        email,
+                        hashedPassword,
+                        phoneNumber,
+                        UserRole.CUSTOMER.getValue(), // Default role
+                        UserStatus.ACTIVE.getValue() // Default status
+                );
+
+                long userId = userDao.insertUser(newUser);
+                return userId > 0;
+            } catch (Exception e) {
+                return false;
             }
-
-            // Tạo user mới
-            String hashedPassword = SecurityUtils.hashPassword(password);
-            User newUser = new User(fullName, email, hashedPassword, phoneNumber, "customer", "active");
-            newUser.setCreatedAt(new Date());
-
-            long userId = userDao.insertUser(newUser);
-            return userId > 0;
         });
     }
 
