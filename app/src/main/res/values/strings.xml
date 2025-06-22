@@ -1,3 +1,32 @@
+<!-- app/src/main/res/values/strings.xml -->
 <resources>
-    <string name="app_name">OSS</string>
+    <string name="app_name">OSS Store</string>
+
+    <!-- Authentication -->
+    <string name="welcome_back">Chào mừng trở lại!</string>
+    <string name="create_account">Tạo tài khoản mới</string>
+    <string name="email">Email</string>
+    <string name="password">Mật khẩu</string>
+    <string name="confirm_password">Xác nhận mật khẩu</string>
+    <string name="full_name">Họ và tên</string>
+    <string name="phone_number">Số điện thoại</string>
+    <string name="login">Đăng nhập</string>
+    <string name="register">Đăng ký</string>
+    <string name="forgot_password">Quên mật khẩu?</string>
+    <string name="remember_me">Ghi nhớ đăng nhập</string>
+    <string name="dont_have_account">Chưa có tài khoản? </string>
+    <string name="register_now">Đăng ký ngay</string>
+    <string name="already_have_account">Đã có tài khoản? </string>
+    <string name="login_now">Đăng nhập ngay</string>
+    <string name="reset_password">Đặt lại mật khẩu</string>
+    <string name="send_reset_email">Gửi email đặt lại</string>
+
+    <!-- Validation Messages -->
+    <string name="error_invalid_email">Email không hợp lệ</string>
+    <string name="error_password_too_short">Mật khẩu phải có ít nhất 8 ký tự</string>
+    <string name="error_password_mismatch">Mật khẩu xác nhận không khớp</string>
+    <string name="error_field_required">Trường này bắt buộc</string>
+    <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
+    <string name="error_login_failed">Đăng nhập thất bại</string>
+    <string name="error_register_failed">Đăng ký thất bại</string>
 </resources>

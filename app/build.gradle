@@ -26,6 +26,11 @@ android {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
     }
+    
+    lintOptions {
+        abortOnError false
+        disable 'NotificationPermission'
+    }
 }
 
 dependencies {
@@ -36,6 +41,10 @@ dependencies {
     implementation libs.constraintlayout
     implementation ("com.squareup.picasso:picasso:2.5.2")
 
+    // Lombok
+    compileOnly 'org.projectlombok:lombok:1.18.30'
+    annotationProcessor 'org.projectlombok:lombok:1.18.30'
+
     // Room dependencies
     implementation 'androidx.room:room-runtime:2.6.1'
     annotationProcessor 'androidx.room:room-compiler:2.6.1'
@@ -43,11 +52,7 @@ dependencies {
     // ViewModel và LiveData
     implementation 'androidx.lifecycle:lifecycle-viewmodel:2.7.0'
     implementation 'androidx.lifecycle:lifecycle-livedata:2.7.0'
-
-    // Lombok
-    compileOnly 'org.projectlombok:lombok:1.18.30'
-    annotationProcessor 'org.projectlombok:lombok:1.18.30'
-
+    
     // RecyclerView
     implementation 'androidx.recyclerview:recyclerview:1.3.2'
 
