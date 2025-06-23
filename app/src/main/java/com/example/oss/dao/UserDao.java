@@ -27,4 +27,7 @@ public interface UserDao {
 
     @Delete
     void deleteUser(User user);
+
+    @Query("SELECT * FROM users WHERE id = :userId")
+    User getUserByIdSync(int userId);
 }

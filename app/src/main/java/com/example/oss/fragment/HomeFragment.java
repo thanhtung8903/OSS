@@ -17,6 +17,7 @@ import com.example.oss.adapter.ProductAdapter;
 import com.example.oss.entity.Category;
 import com.example.oss.entity.Product;
 import com.example.oss.viewmodel.ProductViewModel;
+import com.example.oss.viewmodel.CartViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
 
@@ -29,6 +30,8 @@ public class HomeFragment extends BaseFragment {
     // Adapters
     private CategoryAdapter categoryAdapter;
     private ProductAdapter productAdapter;
+
+    private CartViewModel cartViewModel;
 
     @Nullable
     @Override
@@ -158,8 +161,13 @@ public class HomeFragment extends BaseFragment {
             return;
         }
 
+        // Initialize CartViewModel if not already done
+        if (cartViewModel == null) {
+            cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        }
+
+        // Add to cart
+        cartViewModel.addToCart(product.getId(), 1);
         Toast.makeText(getContext(), "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
-        // TODO: Add to cart logic
-        // cartViewModel.addToCart(product.getId(), 1);
     }
 }

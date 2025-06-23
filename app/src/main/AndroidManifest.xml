@@ -27,6 +27,15 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+                <activity
+            android:name=".ui.profile.EditProfileActivity"
+            android:theme="@style/Theme.OSS"
+            android:windowSoftInputMode="adjustResize" />
+            
+        <activity
+            android:name=".ui.profile.ChangePasswordActivity"
+            android:theme="@style/Theme.OSS"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

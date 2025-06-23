@@ -11,10 +11,14 @@ import com.example.oss.util.SessionManager;
 import com.example.oss.util.UserRole;
 import com.example.oss.util.UserStatus;
 import java.util.concurrent.Future;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import androidx.annotation.NonNull;
 
 public class AuthViewModel extends AndroidViewModel {
     private UserRepository userRepository;
     private SessionManager sessionManager;
+    private ExecutorService executor;
 
     private MutableLiveData<Boolean> isLoading;
     private MutableLiveData<String> errorMessage;
@@ -22,6 +26,7 @@ public class AuthViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> registerSuccess;
     private MutableLiveData<SessionManager.SessionUser> currentUser;
     private MutableLiveData<LoginResult> loginResult;
+    private MutableLiveData<Boolean> updateSuccess;
 
     // LoginResult class to encapsulate login response
     public static class LoginResult {
@@ -42,10 +47,11 @@ public class AuthViewModel extends AndroidViewModel {
         }
     }
 
-    public AuthViewModel(Application application) {
+    public AuthViewModel(@NonNull Application application) {
         super(application);
         userRepository = new UserRepository(application);
         sessionManager = SessionManager.getInstance(application);
+        executor = Executors.newSingleThreadExecutor();
 
         isLoading = new MutableLiveData<>(false);
         errorMessage = new MutableLiveData<>();
@@ -53,6 +59,7 @@ public class AuthViewModel extends AndroidViewModel {
         registerSuccess = new MutableLiveData<>(false);
         currentUser = new MutableLiveData<>(sessionManager.getLoggedInUser());
         loginResult = new MutableLiveData<>();
+        updateSuccess = new MutableLiveData<>();
     }
 
     // Getters for LiveData
@@ -78,6 +85,10 @@ public class AuthViewModel extends AndroidViewModel {
 
     public LiveData<LoginResult> getLoginResult() {
         return loginResult;
+    }
+
+    public LiveData<Boolean> getUpdateSuccess() {
+        return updateSuccess;
     }
 
     // Login method
@@ -272,5 +283,107 @@ public class AuthViewModel extends AndroidViewModel {
 
     public void clearRegisterSuccess() {
         registerSuccess.postValue(false);
+    }
+
+    // Update profile without password change
+    public void updateProfile(User updatedUser) {
+        isLoading.setValue(true);
+        errorMessage.setValue(null);
+
+        executor.execute(() -> {
+            try {
+                userRepository.updateUser(updatedUser);
+
+                // Update session với new data
+                SessionManager sessionManager = SessionManager.getInstance(getApplication());
+                sessionManager.createLoginSession(updatedUser,
+                        sessionManager.getLoggedInUser() != null); // preserve remember me setting
+
+                updateSuccess.postValue(true);
+            } catch (Exception e) {
+                errorMessage.postValue("Lỗi khi cập nhật thông tin: " + e.getMessage());
+            } finally {
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+    // Update profile with password change
+    public void updateProfileWithPassword(User updatedUser, String currentPassword, String newPassword) {
+        isLoading.setValue(true);
+        errorMessage.setValue(null);
+
+        executor.execute(() -> {
+            try {
+                // Verify current password first
+                User existingUser = userRepository.getUserByIdSync(updatedUser.getId());
+                if (existingUser == null) {
+                    errorMessage.postValue("Không tìm thấy thông tin người dùng");
+                    return;
+                }
+
+                String hashedCurrentPassword = SecurityUtils.hashPassword(currentPassword);
+                if (!hashedCurrentPassword.equals(existingUser.getPassword())) {
+                    errorMessage.postValue("Mật khẩu hiện tại không đúng");
+                    return;
+                }
+
+                // Hash new password và update
+                String hashedNewPassword = SecurityUtils.hashPassword(newPassword);
+                updatedUser.setPassword(hashedNewPassword);
+
+                userRepository.updateUser(updatedUser);
+
+                // Update session với new data
+                SessionManager sessionManager = SessionManager.getInstance(getApplication());
+                sessionManager.createLoginSession(updatedUser,
+                        sessionManager.getLoggedInUser() != null); // preserve remember me setting
+
+                updateSuccess.postValue(true);
+            } catch (Exception e) {
+                errorMessage.postValue("Lỗi khi cập nhật thông tin: " + e.getMessage());
+            } finally {
+                isLoading.postValue(false);
+            }
+        });
+    }
+
+    public void clearUpdateSuccess() {
+        updateSuccess.setValue(null);
+    }
+
+    // Change password only (separated method)
+    public void changePassword(int userId, String currentPassword, String newPassword) {
+        isLoading.setValue(true);
+        errorMessage.setValue(null);
+
+        executor.execute(() -> {
+            try {
+                // Verify current password first
+                User existingUser = userRepository.getUserByIdSync(userId);
+                if (existingUser == null) {
+                    errorMessage.postValue("Không tìm thấy thông tin người dùng");
+                    return;
+                }
+
+                String hashedCurrentPassword = SecurityUtils.hashPassword(currentPassword);
+                if (!hashedCurrentPassword.equals(existingUser.getPassword())) {
+                    errorMessage.postValue("Mật khẩu hiện tại không đúng");
+                    return;
+                }
+
+                // Hash new password và update
+                String hashedNewPassword = SecurityUtils.hashPassword(newPassword);
+                existingUser.setPassword(hashedNewPassword);
+
+                userRepository.updateUser(existingUser);
+
+                updateSuccess.postValue(true);
+            } catch (Exception e) {
+                errorMessage.postValue("Lỗi khi đổi mật khẩu: " + e.getMessage());
+            } finally {
+                isLoading.postValue(false);
+            }
+        });
     }
 }

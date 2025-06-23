@@ -6,14 +6,30 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.example.oss.MainActivity;
 import com.example.oss.R;
+import com.example.oss.adapter.CartAdapter;
+import com.example.oss.dao.CartDao;
+import com.example.oss.viewmodel.CartViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+
+import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.Locale;
+
+import com.example.oss.adapter.CartAdapter;
+import com.example.oss.dao.CartDao;
+import com.example.oss.viewmodel.CartViewModel;
+
+import java.util.ArrayList;
 
 public class CartFragment extends BaseFragment {
 
@@ -26,17 +42,16 @@ public class CartFragment extends BaseFragment {
     private MaterialButton btnLogin, btnBrowseProducts, btnCheckout;
     private MaterialCardView cardSummary;
 
-    // TODO: Add CartAdapter and CartViewModel when created
-    // private CartAdapter cartAdapter;
-    // private CartViewModel cartViewModel;
-
     private double totalAmount = 0.0;
     private int totalItems = 0;
+
+    private CartAdapter cartAdapter;
+    private CartViewModel cartViewModel;
 
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-            @Nullable Bundle savedInstanceState) {
+                             @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
@@ -70,6 +85,9 @@ public class CartFragment extends BaseFragment {
         btnBrowseProducts = view.findViewById(R.id.btn_browse_products_not_logged_in);
         btnCheckout = view.findViewById(R.id.btn_checkout);
         cardSummary = view.findViewById(R.id.card_summary);
+
+        // Initialize ViewModels
+        cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
     }
 
     private void setupListeners() {
@@ -101,10 +119,46 @@ public class CartFragment extends BaseFragment {
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         rvCartItems.setLayoutManager(layoutManager);
 
-        // TODO: Initialize and set adapter when CartAdapter is created
-        // cartAdapter = new CartAdapter(cartItems, this::onQuantityChanged,
-        // this::onRemoveFromCart);
-        // rvCartItems.setAdapter(cartAdapter);
+        cartAdapter = new CartAdapter(new ArrayList<>(), this::onQuantityChanged, this::onRemoveFromCart);
+        rvCartItems.setAdapter(cartAdapter);
+    }
+
+    private void setupObservers() {
+        // Observe cart items
+        cartViewModel.getCartItems().observe(getViewLifecycleOwner(), cartItems -> {
+            if (cartItems != null) {
+                if (cartItems.isEmpty()) {
+                    showEmptyCart();
+                } else {
+                    showCartItems();
+                    cartAdapter.updateCartItems(cartItems);
+                }
+            }
+        });
+
+        // Observe cart total
+        cartViewModel.getCartTotal().observe(getViewLifecycleOwner(), total -> {
+            if (total != null) {
+                totalAmount = total.doubleValue();
+                updateSummary();
+            }
+        });
+
+        // Observe cart count
+        cartViewModel.getTotalQuantity().observe(getViewLifecycleOwner(), quantity -> {
+            if (quantity != null) {
+                totalItems = quantity;
+                updateSummary();
+            }
+        });
+
+        // Observe errors
+        cartViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+            if (error != null && !error.isEmpty()) {
+                Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                cartViewModel.clearError();
+            }
+        });
     }
 
     private void checkLoginAndLoadData() {
@@ -117,47 +171,135 @@ public class CartFragment extends BaseFragment {
     }
 
     private void loadCartItems() {
-        // TODO: Load cart items from ViewModel
-        // cartViewModel.getCartItems().observe(this, items -> {
-        // if (items.isEmpty()) {
-        // showEmptyCart();
-        // } else {
-        // showCartItems(items);
-        // calculateTotal(items);
-        // }
-        // });
-
-        // Mock for now - show empty cart
-        showEmptyCart();
+        setupObservers();
     }
 
     private void onQuantityChanged(int productId, int newQuantity) {
-        // TODO: Update quantity in cart
-        // cartViewModel.updateQuantity(productId, newQuantity);
-        Toast.makeText(getContext(), "Đã cập nhật số lượng", Toast.LENGTH_SHORT).show();
-
-        // Recalculate total
-        // calculateTotal();
+        if (cartViewModel != null) {
+            cartViewModel.updateQuantity(productId, newQuantity);
+            // Trigger refresh total after a short delay để đảm bảo data đã update
+            rvCartItems.postDelayed(this::refreshTotal, 100);
+        } else {
+            Toast.makeText(getContext(), "Lỗi: không thể cập nhật số lượng", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void onRemoveFromCart(int productId) {
-        // TODO: Remove item from cart
-        // cartViewModel.removeFromCart(productId);
-        Toast.makeText(getContext(), "Đã xóa khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+        if (cartViewModel != null) {
+            cartViewModel.removeFromCart(productId);
+            Toast.makeText(getContext(), "Đã xóa khỏi giỏ hàng", Toast.LENGTH_SHORT).show();
+            // Trigger refresh total after a short delay để đảm bảo data đã update
+            rvCartItems.postDelayed(this::refreshTotal, 100);
+        } else {
+            Toast.makeText(getContext(), "Lỗi: không thể xóa sản phẩm", Toast.LENGTH_SHORT).show();
+        }
     }
 
     private void calculateTotal() {
-        // TODO: Calculate total from cart items
-        // Mock calculation
-        totalAmount = 299000.0; // Sample amount
-        totalItems = 2; // Sample item count
+        // Nếu đã có CartViewModel, sử dụng LiveData observers thay vì tính toán manual
+        // Method này chỉ cần trigger update hoặc tính toán backup nếu cần
+        if (cartViewModel != null && getCurrentUser() != null) {
+            // Trigger manual calculation nếu LiveData chưa cập nhật
+            cartViewModel.getCartTotal().observe(getViewLifecycleOwner(), total -> {
+                if (total != null) {
+                    totalAmount = total.doubleValue();
+                    updateSummary();
+                }
+            });
+
+            cartViewModel.getTotalQuantity().observe(getViewLifecycleOwner(), quantity -> {
+                if (quantity != null) {
+                    totalItems = quantity;
+                    updateSummary();
+                }
+            });
+        } else {
+            // Fallback calculation từ adapter data nếu cần
+            calculateTotalFromAdapter();
+        }
+    }
+
+    /**
+     * Backup method để tính total từ adapter data
+     * Sử dụng khi CartViewModel chưa sẵn sàng
+     */
+    private void calculateTotalFromAdapter() {
+        if (cartAdapter == null) {
+            totalAmount = 0.0;
+            totalItems = 0;
+            updateSummary();
+            return;
+        }
+
+        try {
+            // Tính tổng từ adapter data
+            totalAmount = cartAdapter.getTotalAmount().doubleValue();
+            totalItems = cartAdapter.getTotalQuantity();
+
+
+        } catch (Exception e) {
+            // Fallback nếu có lỗi
+            totalAmount = 0.0;
+            totalItems = 0;
+            android.util.Log.e("CartFragment", "Error calculating total from adapter", e);
+        }
 
         updateSummary();
     }
 
+    /**
+     * Method để force refresh total calculation
+     * Gọi khi có thay đổi quantity hoặc remove items
+     */
+    private void refreshTotal() {
+        if (cartViewModel != null && getCurrentUser() != null) {
+            // Trigger re-observe để cập nhật latest data
+            calculateTotal();
+        }
+    }
+
     private void updateSummary() {
-        tvTotalAmount.setText(String.format("%,.0f₫", totalAmount));
-        tvItemCount.setText(String.format("%d sản phẩm", totalItems));
+        // Format currency theo chuẩn Việt Nam
+        NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
+        String formattedAmount = currencyFormat.format(totalAmount);
+        // Thay thế VND với ₫ để hiển thị đẹp hơn
+        formattedAmount = formattedAmount.replace("₫", "").trim() + "₫";
+
+        // Cập nhật UI
+        if (tvTotalAmount != null) {
+            tvTotalAmount.setText(formattedAmount);
+        }
+
+        if (tvItemCount != null) {
+            // Hiển thị số lượng với unit phù hợp
+            String itemText;
+            if (totalItems == 0) {
+                itemText = "Không có sản phẩm";
+            } else if (totalItems == 1) {
+                itemText = "1 sản phẩm";
+            } else {
+                itemText = String.format("%d sản phẩm", totalItems);
+            }
+            tvItemCount.setText(itemText);
+        }
+
+        // Cập nhật subtotal TextView nếu có (trong layout summary)
+        TextView tvSubtotal = cardSummary != null ? cardSummary.findViewById(R.id.tv_subtotal) : null;
+        if (tvSubtotal != null) {
+            tvSubtotal.setText(formattedAmount);
+        }
+
+        // Enable/disable checkout button dựa trên total
+        if (btnCheckout != null) {
+            btnCheckout.setEnabled(totalItems > 0 && totalAmount > 0);
+            if (totalItems == 0) {
+                btnCheckout.setText("Giỏ hàng trống");
+            } else {
+                btnCheckout.setText(String.format("Thanh toán (%s)", formattedAmount));
+            }
+        }
+
+
     }
 
     private void performCheckout() {

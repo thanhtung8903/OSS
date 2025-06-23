@@ -18,6 +18,9 @@ import com.example.oss.util.SessionManager;
 import com.example.oss.viewmodel.AuthViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.example.oss.ui.profile.EditProfileActivity;
+import com.example.oss.ui.profile.ChangePasswordActivity;
+import android.app.Activity;
 
 public class ProfileFragment extends BaseFragment {
 
@@ -26,7 +29,9 @@ public class ProfileFragment extends BaseFragment {
     private MaterialButton btnLogin;
     private MaterialButton btnLogout;
     private TextView tvWelcome, tvUserName, tvUserEmail, tvUserPhone;
-    private MaterialCardView cardPersonalInfo, cardOrders, cardAddresses, cardSettings;
+    private MaterialCardView cardPersonalInfo, cardOrders, cardAddresses, cardChangePassword, cardSettings;
+    private static final int EDIT_PROFILE_REQUEST = 1001;
+    private static final int CHANGE_PASSWORD_REQUEST = 1002;
 
     @Nullable
     @Override
@@ -68,6 +73,7 @@ public class ProfileFragment extends BaseFragment {
         cardPersonalInfo = view.findViewById(R.id.card_personal_info);
         cardOrders = view.findViewById(R.id.card_orders);
         cardAddresses = view.findViewById(R.id.card_addresses);
+        cardChangePassword = view.findViewById(R.id.card_change_password);
         cardSettings = view.findViewById(R.id.card_settings);
     }
 
@@ -85,8 +91,8 @@ public class ProfileFragment extends BaseFragment {
         });
 
         cardPersonalInfo.setOnClickListener(v -> {
-            // TODO: Navigate to personal info edit
-            Toast.makeText(getContext(), "Chỉnh sửa thông tin cá nhân", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), EditProfileActivity.class);
+            startActivityForResult(intent, EDIT_PROFILE_REQUEST);
         });
 
         cardOrders.setOnClickListener(v -> {
@@ -97,6 +103,11 @@ public class ProfileFragment extends BaseFragment {
         cardAddresses.setOnClickListener(v -> {
             // TODO: Navigate to address management
             Toast.makeText(getContext(), "Quản lý địa chỉ", Toast.LENGTH_SHORT).show();
+        });
+
+        cardChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ChangePasswordActivity.class);
+            startActivityForResult(intent, CHANGE_PASSWORD_REQUEST);
         });
 
         cardSettings.setOnClickListener(v -> {
@@ -176,5 +187,18 @@ public class ProfileFragment extends BaseFragment {
     private void showLoggedInUI() {
         layoutNotLoggedIn.setVisibility(View.GONE);
         layoutLoggedIn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EDIT_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
+            // Refresh user data sau khi edit
+            loadUserData();
+            Toast.makeText(getContext(), "Thông tin đã được cập nhật", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == CHANGE_PASSWORD_REQUEST && resultCode == Activity.RESULT_OK) {
+            Toast.makeText(getContext(), "Mật khẩu đã được thay đổi thành công", Toast.LENGTH_SHORT).show();
+        }
     }
 }
