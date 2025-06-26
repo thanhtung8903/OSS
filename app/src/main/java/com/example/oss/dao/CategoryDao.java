@@ -27,4 +27,8 @@ public interface CategoryDao {
 
     @Delete
     void deleteCategory(Category category);
+
+    // Methods cho sample data
+    @Query("DELETE FROM categories")
+    void deleteAllCategories();
 }

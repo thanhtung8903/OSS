@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <RadioGroup
+        android:id="@+id/radio_group_sort"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <RadioButton
+            android:id="@+id/radio_name_asc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tên: A-Z"
+            android:textSize="16sp"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/radio_name_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Tên: Z-A"
+            android:textSize="16sp"
+            android:padding="12dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/outline_variant"
+            android:layout_marginVertical="8dp" />
+
+        <RadioButton
+            android:id="@+id/radio_price_asc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Giá: Thấp đến cao"
+            android:textSize="16sp"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/radio_price_desc"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Giá: Cao đến thấp"
+            android:textSize="16sp"
+            android:padding="12dp" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/outline_variant"
+            android:layout_marginVertical="8dp" />
+
+        <RadioButton
+            android:id="@+id/radio_stock_first"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Còn hàng trước"
+            android:textSize="16sp"
+            android:padding="12dp" />
+
+        <RadioButton
+            android:id="@+id/radio_newest_first"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Mới nhất"
+            android:textSize="16sp"
+            android:padding="12dp" />
+
+    </RadioGroup>
+
+</ScrollView> 

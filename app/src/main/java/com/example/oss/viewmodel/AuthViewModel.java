@@ -223,10 +223,10 @@ public class AuthViewModel extends AndroidViewModel {
             return false;
         }
 
-        if (!SecurityUtils.isValidEmail(email)) {
-            errorMessage.postValue("Email không hợp lệ");
-            return false;
-        }
+//        if (!SecurityUtils.isValidEmail(email)) {
+//            errorMessage.postValue("Email không hợp lệ");
+//            return false;
+//        }
 
         if (password == null || password.isEmpty()) {
             errorMessage.postValue("Mật khẩu không được để trống");

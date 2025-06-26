@@ -63,15 +63,4 @@ public class CategoryRepository {
         Category category = new Category(name, description, parentId);
         insertCategory(category);
     }
-
-    // Insert sample categories
-    public void insertSampleData() {
-        executor.execute(() -> {
-            categoryDao.insertCategory(new Category("Điện tử", "Điện thoại, laptop, phụ kiện công nghệ", null));
-            categoryDao.insertCategory(new Category("Thời trang", "Quần áo, giày dép, phụ kiện thời trang", null));
-            categoryDao.insertCategory(new Category("Sách", "Sách văn học, sách kỹ năng, sách thiếu nhi", null));
-            categoryDao.insertCategory(new Category("Nhà cửa & Đời sống", "Đồ gia dụng, nội thất, cây cảnh", null));
-            categoryDao.insertCategory(new Category("Thể thao & Du lịch", "Dụng cụ thể thao, đồ du lịch", null));
-        });
-    }
 }

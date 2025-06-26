@@ -15,14 +15,34 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
-        <!-- Product Image -->
-        <ImageView
-            android:id="@+id/iv_product_image"
+        <!-- Product Image với Wishlist Icon -->
+        <FrameLayout
             android:layout_width="match_parent"
-            android:layout_height="150dp"
-            android:scaleType="centerCrop"
-            android:background="@color/surface_variant"
-            app:srcCompat="@drawable/ic_image_placeholder" />
+            android:layout_height="150dp">
+
+            <ImageView
+                android:id="@+id/iv_product_image"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:scaleType="centerCrop"
+                android:background="@color/surface_variant"
+                app:srcCompat="@drawable/ic_image_placeholder" />
+
+            <!-- Wishlist Icon -->
+            <ImageView
+                android:id="@+id/iv_wishlist_icon"
+                android:layout_width="32dp"
+                android:layout_height="32dp"
+                android:layout_gravity="top|end"
+                android:layout_margin="8dp"
+                android:background="@drawable/category_icon_background"
+                android:padding="6dp"
+                android:src="@drawable/ic_favorite_border"
+                android:clickable="true"
+                android:focusable="true"
+                android:foreground="?android:attr/selectableItemBackgroundBorderless" />
+
+        </FrameLayout>
 
         <!-- Product Info -->
         <LinearLayout

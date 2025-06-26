@@ -3,6 +3,9 @@ package com.example.oss.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -21,6 +24,8 @@ import com.google.android.material.card.MaterialCardView;
 import com.example.oss.ui.profile.EditProfileActivity;
 import com.example.oss.ui.profile.ChangePasswordActivity;
 import android.app.Activity;
+import android.app.AlertDialog;
+import com.example.oss.util.UserRole;
 
 public class ProfileFragment extends BaseFragment {
 
@@ -60,6 +65,38 @@ public class ProfileFragment extends BaseFragment {
         // Re-check login status when returning to fragment
         checkLoginAndLoadData();
     }
+
+//    @Override
+//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+//        // Nếu user là admin, show thêm menu reset data
+//        SessionManager.SessionUser currentUser = getCurrentUser();
+//        if (currentUser != null && currentUser.getRole() == UserRole.ADMIN) {
+//            menu.add(0, R.id.menu_reset_data, 0, "Reset Sample Data")
+//                    .setIcon(R.drawable.ic_settings)
+//                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+//        }
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        if (item.getItemId() == R.id.menu_reset_data) {
+//            // Confirm dialog trước khi reset
+//            new AlertDialog.Builder(requireContext())
+//                    .setTitle("Reset Sample Data")
+//                    .setMessage("Xóa toàn bộ data và insert lại sample data?")
+//                    .setPositiveButton("Reset", (dialog, which) -> {
+//                        if (getActivity() instanceof MainActivity) {
+//                            ((MainActivity) getActivity()).resetSampleData();
+//                            Toast.makeText(getContext(), "Đã reset sample data!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    })
+//                    .setNegativeButton("Hủy", null)
+//                    .show();
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
 
     private void initViews(View view) {
         layoutNotLoggedIn = view.findViewById(R.id.layout_not_logged_in);
