@@ -18,8 +18,9 @@ import com.example.oss.util.Converters;
         Wishlist.class,
         Address.class,
         Order.class,
-        OrderItem.class
-}, version = 1, exportSchema = false)
+        OrderItem.class,
+        Cart.class
+}, version = 2, exportSchema = false)
 @TypeConverters({ Converters.class })
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
@@ -41,6 +42,8 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract OrderItemDao orderItemDao();
 
+    public abstract CartDao cartDao();
+
     public static AppDatabase getDatabase(final Context context) {
         if (INSTANCE == null) {
             synchronized (AppDatabase.class) {
@@ -48,7 +51,9 @@ public abstract class AppDatabase extends RoomDatabase {
                     INSTANCE = Room.databaseBuilder(
                             context.getApplicationContext(),
                             AppDatabase.class,
-                            "oss_database.db").build();
+                            "oss_database.db")
+                            .fallbackToDestructiveMigration()
+                            .build();
                 }
             }
         }

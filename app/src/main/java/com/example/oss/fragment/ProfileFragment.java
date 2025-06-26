@@ -3,6 +3,9 @@ package com.example.oss.fragment;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
@@ -18,6 +21,11 @@ import com.example.oss.util.SessionManager;
 import com.example.oss.viewmodel.AuthViewModel;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
+import com.example.oss.ui.profile.EditProfileActivity;
+import com.example.oss.ui.profile.ChangePasswordActivity;
+import android.app.Activity;
+import android.app.AlertDialog;
+import com.example.oss.util.UserRole;
 
 public class ProfileFragment extends BaseFragment {
 
@@ -26,7 +34,9 @@ public class ProfileFragment extends BaseFragment {
     private MaterialButton btnLogin;
     private MaterialButton btnLogout;
     private TextView tvWelcome, tvUserName, tvUserEmail, tvUserPhone;
-    private MaterialCardView cardPersonalInfo, cardOrders, cardAddresses, cardSettings;
+    private MaterialCardView cardPersonalInfo, cardOrders, cardAddresses, cardChangePassword, cardSettings;
+    private static final int EDIT_PROFILE_REQUEST = 1001;
+    private static final int CHANGE_PASSWORD_REQUEST = 1002;
 
     @Nullable
     @Override
@@ -56,6 +66,38 @@ public class ProfileFragment extends BaseFragment {
         checkLoginAndLoadData();
     }
 
+//    @Override
+//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
+//        // Nếu user là admin, show thêm menu reset data
+//        SessionManager.SessionUser currentUser = getCurrentUser();
+//        if (currentUser != null && currentUser.getRole() == UserRole.ADMIN) {
+//            menu.add(0, R.id.menu_reset_data, 0, "Reset Sample Data")
+//                    .setIcon(R.drawable.ic_settings)
+//                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+//        }
+//        super.onCreateOptionsMenu(menu, inflater);
+//    }
+//
+//    @Override
+//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+//        if (item.getItemId() == R.id.menu_reset_data) {
+//            // Confirm dialog trước khi reset
+//            new AlertDialog.Builder(requireContext())
+//                    .setTitle("Reset Sample Data")
+//                    .setMessage("Xóa toàn bộ data và insert lại sample data?")
+//                    .setPositiveButton("Reset", (dialog, which) -> {
+//                        if (getActivity() instanceof MainActivity) {
+//                            ((MainActivity) getActivity()).resetSampleData();
+//                            Toast.makeText(getContext(), "Đã reset sample data!", Toast.LENGTH_SHORT).show();
+//                        }
+//                    })
+//                    .setNegativeButton("Hủy", null)
+//                    .show();
+//            return true;
+//        }
+//        return super.onOptionsItemSelected(item);
+//    }
+
     private void initViews(View view) {
         layoutNotLoggedIn = view.findViewById(R.id.layout_not_logged_in);
         layoutLoggedIn = view.findViewById(R.id.layout_logged_in);
@@ -68,6 +110,7 @@ public class ProfileFragment extends BaseFragment {
         cardPersonalInfo = view.findViewById(R.id.card_personal_info);
         cardOrders = view.findViewById(R.id.card_orders);
         cardAddresses = view.findViewById(R.id.card_addresses);
+        cardChangePassword = view.findViewById(R.id.card_change_password);
         cardSettings = view.findViewById(R.id.card_settings);
     }
 
@@ -85,8 +128,8 @@ public class ProfileFragment extends BaseFragment {
         });
 
         cardPersonalInfo.setOnClickListener(v -> {
-            // TODO: Navigate to personal info edit
-            Toast.makeText(getContext(), "Chỉnh sửa thông tin cá nhân", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), EditProfileActivity.class);
+            startActivityForResult(intent, EDIT_PROFILE_REQUEST);
         });
 
         cardOrders.setOnClickListener(v -> {
@@ -97,6 +140,11 @@ public class ProfileFragment extends BaseFragment {
         cardAddresses.setOnClickListener(v -> {
             // TODO: Navigate to address management
             Toast.makeText(getContext(), "Quản lý địa chỉ", Toast.LENGTH_SHORT).show();
+        });
+
+        cardChangePassword.setOnClickListener(v -> {
+            Intent intent = new Intent(getContext(), ChangePasswordActivity.class);
+            startActivityForResult(intent, CHANGE_PASSWORD_REQUEST);
         });
 
         cardSettings.setOnClickListener(v -> {
@@ -176,5 +224,18 @@ public class ProfileFragment extends BaseFragment {
     private void showLoggedInUI() {
         layoutNotLoggedIn.setVisibility(View.GONE);
         layoutLoggedIn.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == EDIT_PROFILE_REQUEST && resultCode == Activity.RESULT_OK) {
+            // Refresh user data sau khi edit
+            loadUserData();
+            Toast.makeText(getContext(), "Thông tin đã được cập nhật", Toast.LENGTH_SHORT).show();
+        } else if (requestCode == CHANGE_PASSWORD_REQUEST && resultCode == Activity.RESULT_OK) {
+            Toast.makeText(getContext(), "Mật khẩu đã được thay đổi thành công", Toast.LENGTH_SHORT).show();
+        }
     }
 }

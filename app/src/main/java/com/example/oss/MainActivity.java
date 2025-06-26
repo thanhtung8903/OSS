@@ -1,9 +1,12 @@
 package com.example.oss;
 
+import android.content.Intent;
 import android.os.Bundle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
+
+import com.example.oss.ui.auth.RegisterActivity;
 import com.example.oss.viewmodel.AuthViewModel;
 import com.example.oss.fragment.HomeFragment;
 import com.example.oss.fragment.SearchFragment;
@@ -13,16 +16,21 @@ import com.example.oss.fragment.ProfileFragment;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import com.example.oss.util.SessionManager;
 import com.example.oss.util.UserRole;
+import com.example.oss.util.SampleDataManager;
 
 public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private AuthViewModel authViewModel;
+    private SampleDataManager sampleDataManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Initialize SampleDataManager và load sample data
+        initializeSampleData();
 
         // Initialize ViewModel
         authViewModel = new ViewModelProvider(this).get(AuthViewModel.class);
@@ -52,8 +60,8 @@ public class MainActivity extends AppCompatActivity {
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
-                // } else if (itemId == R.id.nav_search) {
-                // selectedFragment = new SearchFragment();
+            } else if (itemId == R.id.nav_search) {
+                selectedFragment = new SearchFragment();
             } else if (itemId == R.id.nav_cart) {
                 selectedFragment = new CartFragment();
             } else if (itemId == R.id.nav_wishlist) {
@@ -98,6 +106,16 @@ public class MainActivity extends AppCompatActivity {
         // Update bottom navigation or show admin options
         if (user.getRole() == UserRole.ADMIN) {
             // Show admin-specific UI
+            // Admin có thể reset sample data nếu cần
+        }
+    }
+
+    /**
+     * Method để force reset sample data (dành cho admin hoặc testing)
+     */
+    public void resetSampleData() {
+        if (sampleDataManager != null) {
+            sampleDataManager.forceInsertSampleData();
         }
     }
 
@@ -110,5 +128,14 @@ public class MainActivity extends AppCompatActivity {
     // Method để redirect về login khi cần
     public void requireLogin() {
         // Sẽ implement sau khi tạo các fragment
+    }
+
+    /**
+     * Initialize sample data khi app khởi chạy
+     */
+    private void initializeSampleData() {
+        sampleDataManager = new SampleDataManager(this);
+        // Chạy async để không block UI
+        sampleDataManager.initializeSampleData();
     }
 }

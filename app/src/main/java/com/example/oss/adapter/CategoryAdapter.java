@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.example.oss.R;
 import com.example.oss.entity.Category;
+import com.example.oss.util.ImageLoader;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,9 +71,11 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             // Set category name
             tvCategoryName.setText(category.getName());
 
-            // Set category icon based on category name
-            int iconRes = getCategoryIcon(category.getName());
-            ivCategoryIcon.setImageResource(iconRes);
+            // Load category icon với ImageLoader
+            ImageLoader.loadCategoryIcon(
+                    itemView.getContext(),
+                    null,
+                    ivCategoryIcon);
 
             // Set click listener
             itemView.setOnClickListener(v -> {

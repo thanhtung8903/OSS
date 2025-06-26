@@ -8,16 +8,19 @@ import androidx.lifecycle.ViewModelProvider;
 import com.example.oss.MainActivity;
 import com.example.oss.ui.auth.LoginActivity;
 import com.example.oss.viewmodel.AuthViewModel;
+import com.example.oss.util.SessionManager;
 
 public abstract class BaseFragment extends Fragment {
 
     protected AuthViewModel authViewModel;
+    protected SessionManager sessionManager;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         // Initialize AuthViewModel early in lifecycle to prevent NPE
         initAuthViewModel();
+        sessionManager = SessionManager.getInstance(requireContext());
     }
 
     @Override
@@ -75,5 +78,47 @@ public abstract class BaseFragment extends Fragment {
     private void redirectToLogin() {
         Intent intent = new Intent(getContext(), LoginActivity.class);
         startActivity(intent);
+    }
+
+    // Get current user
+    protected SessionManager.SessionUser getCurrentUser() {
+        return sessionManager.getCurrentUser();
+    }
+
+    // Get current user ID (helper method)
+    protected int getCurrentUserId() {
+        return sessionManager.getCurrentUserId();
+    }
+
+    // Check if current user has specific role
+    protected boolean hasRole(com.example.oss.util.UserRole role) {
+        return sessionManager.hasRole(role);
+    }
+
+    // Check if current user is admin
+    protected boolean isAdmin() {
+        return sessionManager.isAdmin();
+    }
+
+    // Check if current user is customer
+    protected boolean isCustomer() {
+        return sessionManager.isCustomer();
+    }
+
+    // Update session (extend timeout)
+    protected void updateSession() {
+        sessionManager.updateSession();
+    }
+
+    // Logout current user
+    protected void logout() {
+        sessionManager.logoutUser();
+        // Optionally redirect to login screen
+        Intent intent = new Intent(getActivity(), LoginActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+        startActivity(intent);
+        if (getActivity() != null) {
+            getActivity().finish();
+        }
     }
 }

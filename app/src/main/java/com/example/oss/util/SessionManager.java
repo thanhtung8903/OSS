@@ -87,9 +87,26 @@ public class SessionManager {
                 UserStatus.fromString(preferences.getString(KEY_USER_STATUS, "active")));
     }
 
+    // THÊM METHOD getCurrentUser() - alias for getLoggedInUser() để tương thích với
+    // code khác
+    public SessionUser getCurrentUser() {
+        return getLoggedInUser();
+    }
+
+    // THÊM METHOD getCurrentUserId() để dễ dàng lấy user ID
+    public int getCurrentUserId() {
+        SessionUser user = getCurrentUser();
+        return user != null ? user.getId() : -1;
+    }
+
+    // THÊM METHOD isCurrentUserLoggedIn() để check state
+    public boolean isCurrentUserLoggedIn() {
+        return getCurrentUser() != null;
+    }
+
     // Check user role
     public boolean hasRole(UserRole role) {
-        SessionUser user = getLoggedInUser();
+        SessionUser user = getCurrentUser();
         return user != null && user.getRole() == role;
     }
 
@@ -105,17 +122,17 @@ public class SessionManager {
 
     // Check user permissions
     public boolean canAccessAdminPanel() {
-        SessionUser user = getLoggedInUser();
+        SessionUser user = getCurrentUser();
         return user != null && user.getRole().canAccessAdminPanel();
     }
 
     public boolean canManageProducts() {
-        SessionUser user = getLoggedInUser();
+        SessionUser user = getCurrentUser();
         return user != null && user.getRole().canManageProducts();
     }
 
     public boolean canManageUsers() {
-        SessionUser user = getLoggedInUser();
+        SessionUser user = getCurrentUser();
         return user != null && user.getRole().canManageUsers();
     }
 
@@ -131,6 +148,24 @@ public class SessionManager {
     public void logoutUser() {
         editor.clear();
         editor.apply();
+    }
+
+    // THÊM METHOD để get session info
+    public String getSessionInfo() {
+        SessionUser user = getCurrentUser();
+        if (user == null) {
+            return "Chưa đăng nhập";
+        }
+
+        long loginTime = preferences.getLong(KEY_LOGIN_TIME, 0);
+        boolean rememberMe = preferences.getBoolean(KEY_REMEMBER_ME, false);
+
+        return String.format("User: %s (%s) - Role: %s - Login: %s - Remember: %s",
+                user.getFullName(),
+                user.getEmail(),
+                user.getRole().toString(),
+                new Date(loginTime).toString(),
+                rememberMe ? "Yes" : "No");
     }
 
     // Session User class
@@ -179,6 +214,26 @@ public class SessionManager {
 
         public boolean canLogin() {
             return status.canLogin();
+        }
+
+        // THÊM METHOD toString() để debug dễ dàng
+        @Override
+        public String toString() {
+            return String.format("SessionUser{id=%d, email='%s', fullName='%s', role=%s, status=%s}",
+                    id, email, fullName, role, status);
+        }
+
+        // THÊM METHOD để check permissions nhanh
+        public boolean isAdmin() {
+            return role == UserRole.ADMIN;
+        }
+
+        public boolean isCustomer() {
+            return role == UserRole.CUSTOMER;
+        }
+
+        public boolean isActive() {
+            return status == UserStatus.ACTIVE;
         }
     }
 }

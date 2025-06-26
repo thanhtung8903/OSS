@@ -147,4 +147,13 @@ public class UserRepository {
     public boolean isValidEmail(String email) {
         return SecurityUtils.isValidEmail(email);
     }
+
+    // Synchronous method để get user by ID (cho validation)
+    public User getUserByIdSync(int userId) {
+        try {
+            return executor.submit(() -> userDao.getUserByIdSync(userId)).get();
+        } catch (Exception e) {
+            return null;
+        }
+    }
 }

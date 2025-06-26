@@ -25,11 +25,135 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:inputType="text"
-                android:imeOptions="actionSearch" />
+                android:imeOptions="actionSearch"
+                android:maxLines="1" />
 
         </com.google.android.material.textfield.TextInputLayout>
 
     </com.google.android.material.card.MaterialCardView>
+
+    <!-- Filter Section -->
+    <LinearLayout
+        android:id="@+id/layout_filter_section"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:paddingHorizontal="16dp"
+        android:visibility="gone">
+
+        <!-- Results Info và Filter Controls -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <!-- Results Count -->
+            <TextView
+                android:id="@+id/tv_search_results_count"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Tìm thấy 0 sản phẩm"
+                android:textSize="14sp"
+                android:textColor="@color/on_surface_variant"
+                android:paddingBottom="8dp" />
+
+            <!-- Filter Buttons Row -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:paddingBottom="8dp">
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_toggle_filters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Danh mục"
+                        android:textSize="12sp"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        app:icon="@drawable/ic_category_default"
+                        app:iconSize="14dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_price_filter"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Giá"
+                        android:textSize="12sp"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        app:icon="@drawable/ic_settings"
+                        app:iconSize="14dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_sort_options"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Sắp xếp: Tên A-Z"
+                        android:textSize="12sp"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        app:icon="@drawable/ic_settings"
+                        app:iconSize="14dp"
+                        android:layout_marginEnd="8dp" />
+
+                    <CheckBox
+                        android:id="@+id/cb_in_stock_only"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Còn hàng"
+                        android:textSize="12sp"
+                        android:layout_gravity="center_vertical"
+                        android:layout_marginEnd="8dp" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btn_clear_filters"
+                        android:layout_width="wrap_content"
+                        android:layout_height="32dp"
+                        android:text="Xóa bộ lọc"
+                        android:textSize="12sp"
+                        style="@style/Widget.Material3.Button.TextButton"
+                        app:icon="@drawable/ic_delete"
+                        app:iconSize="14dp"
+                        android:visibility="gone" />
+
+                </LinearLayout>
+
+            </HorizontalScrollView>
+
+        </LinearLayout>
+
+        <!-- Category Filter Chips -->
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/rv_category_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            android:clipToPadding="false"
+            android:visibility="gone" />
+
+        <!-- Active Filters Display -->
+        <com.google.android.material.chip.ChipGroup
+            android:id="@+id/chip_group_active_filters"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:paddingBottom="8dp"
+            app:chipSpacing="4dp"
+            app:lineSpacing="4dp" />
+
+        <!-- Divider -->
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="@color/outline_variant"
+            android:layout_marginBottom="8dp" />
+
+    </LinearLayout>
 
     <!-- Content Container -->
     <FrameLayout
@@ -56,7 +180,7 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Tìm kiếm sản phẩm"
+                android:text="Tìm kiếm và lọc sản phẩm"
                 android:textSize="18sp"
                 android:textStyle="bold"
                 android:layout_marginBottom="8dp" />
@@ -64,10 +188,35 @@
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Nhập từ khóa để tìm kiếm sản phẩm bạn muốn"
+                android:text="Nhập từ khóa tìm kiếm hoặc sử dụng bộ lọc để tìm sản phẩm phù hợp"
                 android:textSize="14sp"
                 android:textColor="@color/on_surface_variant"
                 android:textAlignment="center" />
+
+        </LinearLayout>
+
+        <!-- Loading State -->
+        <LinearLayout
+            android:id="@+id/layout_loading"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            android:gravity="center"
+            android:padding="32dp"
+            android:visibility="gone">
+
+            <com.google.android.material.progressindicator.CircularProgressIndicator
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:indicatorColor="@color/primary" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Đang tìm kiếm..."
+                android:textSize="16sp"
+                android:textColor="@color/on_surface_variant" />
 
         </LinearLayout>
 
@@ -98,20 +247,30 @@
                 android:layout_marginBottom="16dp" />
 
             <TextView
+                android:id="@+id/tv_empty_title"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Không tìm thấy sản phẩm"
                 android:textSize="18sp"
                 android:textStyle="bold"
+                android:textAlignment="center"
                 android:layout_marginBottom="8dp" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Thử tìm kiếm với từ khóa khác"
+                android:text="Thử thay đổi từ khóa hoặc điều chỉnh bộ lọc"
                 android:textSize="14sp"
                 android:textColor="@color/on_surface_variant"
-                android:textAlignment="center" />
+                android:textAlignment="center"
+                android:layout_marginBottom="16dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_browse_products"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xem tất cả sản phẩm"
+                style="@style/Widget.Material3.Button.TextButton" />
 
         </LinearLayout>
 

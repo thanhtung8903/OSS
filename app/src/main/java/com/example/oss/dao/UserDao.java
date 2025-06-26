@@ -27,4 +27,14 @@ public interface UserDao {
 
     @Delete
     void deleteUser(User user);
+
+    @Query("SELECT * FROM users WHERE id = :userId")
+    User getUserByIdSync(int userId);
+
+    // Methods cho sample data
+    @Query("SELECT COUNT(*) FROM users")
+    int getUserCountSync();
+
+    @Query("DELETE FROM users")
+    void deleteAllUsers();
 }

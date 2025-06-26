@@ -125,18 +125,20 @@ public class LoginActivity extends AppCompatActivity {
         if (TextUtils.isEmpty(email)) {
             tilEmail.setError("Vui lòng nhập email");
             isValid = false;
-        } else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            tilEmail.setError("Email không hợp lệ");
-            isValid = false;
         }
+//        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+//            tilEmail.setError("Email không hợp lệ");
+//            isValid = false;
+//        }
 
         if (TextUtils.isEmpty(password)) {
             tilPassword.setError("Vui lòng nhập mật khẩu");
             isValid = false;
-        } else if (password.length() < 6) {
-            tilPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
-            isValid = false;
         }
+//        else if (password.length() < 6) {
+//            tilPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
+//            isValid = false;
+//        }
 
         return isValid;
     }

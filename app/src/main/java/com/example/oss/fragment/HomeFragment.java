@@ -1,5 +1,6 @@
 package com.example.oss.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,14 +12,21 @@ import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+
+import com.example.oss.MainActivity;
 import com.example.oss.R;
+import com.example.oss.activity.ProductDetailActivity;
 import com.example.oss.adapter.CategoryAdapter;
 import com.example.oss.adapter.ProductAdapter;
 import com.example.oss.entity.Category;
 import com.example.oss.entity.Product;
 import com.example.oss.viewmodel.ProductViewModel;
+import com.example.oss.viewmodel.CartViewModel;
+import com.example.oss.viewmodel.WishlistViewModel;
 import com.google.android.material.textfield.TextInputEditText;
 import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.Set;
 
 public class HomeFragment extends BaseFragment {
 
@@ -29,6 +37,9 @@ public class HomeFragment extends BaseFragment {
     // Adapters
     private CategoryAdapter categoryAdapter;
     private ProductAdapter productAdapter;
+
+    private CartViewModel cartViewModel;
+    private WishlistViewModel wishlistViewModel;
 
     @Nullable
     @Override
@@ -41,8 +52,9 @@ public class HomeFragment extends BaseFragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        // Initialize ViewModel
+        // Initialize ViewModels
         productViewModel = new ViewModelProvider(this).get(ProductViewModel.class);
+        wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
 
         // Setup UI
         setupViews(view);
@@ -81,16 +93,27 @@ public class HomeFragment extends BaseFragment {
         GridLayoutManager layoutManager = new GridLayoutManager(getContext(), 2);
         rvProducts.setLayoutManager(layoutManager);
 
-        // Initialize adapter
-        productAdapter = new ProductAdapter(new ArrayList<>(), this::onProductClick, this::onAddToCartClick);
+        // Initialize adapter với wishlist listener
+        productAdapter = new ProductAdapter(new ArrayList<>(),
+                this::onProductClick,
+                this::onAddToCartClick,
+                this::onWishlistClick);
         rvProducts.setAdapter(productAdapter);
     }
 
     private void setupSearch() {
         etSearch.setOnClickListener(v -> {
             // Navigate to SearchFragment
-            Toast.makeText(getContext(), "Chuyển đến trang tìm kiếm...", Toast.LENGTH_SHORT).show();
+            if (getActivity() instanceof MainActivity) {
+                MainActivity mainActivity = (MainActivity) getActivity();
+                // Switch to search tab
+                mainActivity.findViewById(R.id.nav_search).performClick();
+            }
         });
+
+        // Optional: Prevent typing, chỉ cho phép click để navigate
+        etSearch.setFocusable(false);
+        etSearch.setClickable(true);
     }
 
     private void setupObservers() {
@@ -130,6 +153,34 @@ public class HomeFragment extends BaseFragment {
                 productViewModel.clearError();
             }
         });
+
+        // Observe wishlist products để update UI
+        if (isLoggedIn()) {
+            wishlistViewModel.getWishlistProducts().observe(getViewLifecycleOwner(), wishlistProducts -> {
+                if (wishlistProducts != null) {
+                    Set<Integer> wishlistProductIds = new HashSet<>();
+                    for (Product product : wishlistProducts) {
+                        wishlistProductIds.add(product.getId());
+                    }
+                    productAdapter.updateWishlistProducts(wishlistProductIds);
+                }
+            });
+
+            // Observe wishlist messages
+            wishlistViewModel.getSuccessMessage().observe(getViewLifecycleOwner(), message -> {
+                if (message != null && !message.isEmpty()) {
+                    Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+                    wishlistViewModel.clearSuccess();
+                }
+            });
+
+            wishlistViewModel.getErrorMessage().observe(getViewLifecycleOwner(), error -> {
+                if (error != null && !error.isEmpty()) {
+                    Toast.makeText(getContext(), error, Toast.LENGTH_LONG).show();
+                    wishlistViewModel.clearError();
+                }
+            });
+        }
     }
 
     private void loadData() {
@@ -139,15 +190,13 @@ public class HomeFragment extends BaseFragment {
     private void onCategoryClick(Category category) {
         Toast.makeText(getContext(), "Danh mục: " + category.getName(), Toast.LENGTH_SHORT).show();
         // TODO: Filter products by category
-        // productViewModel.getProductsByCategory(category.getId()).observe(this,
-        // products -> {
-        // productAdapter.updateProducts(products);
-        // });
     }
 
     private void onProductClick(Product product) {
-        Toast.makeText(getContext(), "Sản phẩm: " + product.getName(), Toast.LENGTH_SHORT).show();
-        // TODO: Navigate to product detail
+        // Navigate to Product Detail Activity
+        Intent intent = new Intent(getActivity(), ProductDetailActivity.class);
+        intent.putExtra(ProductDetailActivity.EXTRA_PRODUCT_ID, product.getId());
+        startActivity(intent);
     }
 
     private void onAddToCartClick(Product product) {
@@ -158,8 +207,23 @@ public class HomeFragment extends BaseFragment {
             return;
         }
 
+        // Initialize CartViewModel if not already done
+        if (cartViewModel == null) {
+            cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
+        }
+
+        // Add to cart
+        cartViewModel.addToCart(product.getId(), 1);
         Toast.makeText(getContext(), "Đã thêm " + product.getName() + " vào giỏ hàng", Toast.LENGTH_SHORT).show();
-        // TODO: Add to cart logic
-        // cartViewModel.addToCart(product.getId(), 1);
+    }
+
+    private void onWishlistClick(Product product) {
+        if (!isLoggedIn()) {
+            Toast.makeText(getContext(), "Vui lòng đăng nhập để sử dụng danh sách yêu thích", Toast.LENGTH_LONG).show();
+            requireLogin();
+            return;
+        }
+
+        wishlistViewModel.toggleWishlist(product.getId());
     }
 }
