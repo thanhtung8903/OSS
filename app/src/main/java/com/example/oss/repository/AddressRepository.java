@@ -86,18 +86,44 @@ public class AddressRepository {
     }
 
     public void updateAddressInfo(int addressId, String receiverName, String phoneNumber,
-            String streetAddress, String city, String postalCode) {
+            String streetAddress, String district, String city, String postalCode,
+            String addressType, String notes) {
         executor.execute(() -> {
-            Address address = addressDao.getAddressById(addressId).getValue();
-            if (address != null) {
-                address.setReceiverName(receiverName);
-                address.setPhoneNumber(phoneNumber);
-                address.setStreetAddress(streetAddress);
-                address.setCity(city);
-                address.setPostalCode(postalCode);
-                addressDao.updateAddress(address);
+            try {
+                // Tạo sync method để lấy address hiện tại
+                Address currentAddress = getAddressSyncById(addressId);
+
+                if (currentAddress != null) {
+                    // Update only the specified fields, keep others unchanged
+                    currentAddress.setReceiverName(receiverName);
+                    currentAddress.setPhoneNumber(phoneNumber);
+                    currentAddress.setStreetAddress(streetAddress);
+                    currentAddress.setDistrict(district);
+                    currentAddress.setCity(city);
+                    currentAddress.setPostalCode(postalCode);
+                    currentAddress.setAddressType(addressType);
+                    currentAddress.setNotes(notes);
+
+                    addressDao.updateAddress(currentAddress);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
+    }
+
+    // Helper method để lấy address sync
+    private Address getAddressSyncById(int addressId) {
+        try {
+            // Simple synchronous query - chỉ dùng cho update operations
+            return executor.submit(() -> {
+                // Tạo query trực tiếp thông qua DAO
+                return addressDao.getAddressByIdSync(addressId);
+            }).get();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 
     public void makeAddressDefault(int userId, int addressId) {

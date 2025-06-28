@@ -15,6 +15,7 @@ import androidx.annotation.Nullable;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.oss.MainActivity;
 import com.example.oss.R;
+import com.example.oss.activity.AddressManagementActivity;
 import com.example.oss.entity.User;
 import com.example.oss.ui.auth.LoginActivity;
 import com.example.oss.util.SessionManager;
@@ -66,37 +67,39 @@ public class ProfileFragment extends BaseFragment {
         checkLoginAndLoadData();
     }
 
-//    @Override
-//    public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater inflater) {
-//        // Nếu user là admin, show thêm menu reset data
-//        SessionManager.SessionUser currentUser = getCurrentUser();
-//        if (currentUser != null && currentUser.getRole() == UserRole.ADMIN) {
-//            menu.add(0, R.id.menu_reset_data, 0, "Reset Sample Data")
-//                    .setIcon(R.drawable.ic_settings)
-//                    .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
-//        }
-//        super.onCreateOptionsMenu(menu, inflater);
-//    }
-//
-//    @Override
-//    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
-//        if (item.getItemId() == R.id.menu_reset_data) {
-//            // Confirm dialog trước khi reset
-//            new AlertDialog.Builder(requireContext())
-//                    .setTitle("Reset Sample Data")
-//                    .setMessage("Xóa toàn bộ data và insert lại sample data?")
-//                    .setPositiveButton("Reset", (dialog, which) -> {
-//                        if (getActivity() instanceof MainActivity) {
-//                            ((MainActivity) getActivity()).resetSampleData();
-//                            Toast.makeText(getContext(), "Đã reset sample data!", Toast.LENGTH_SHORT).show();
-//                        }
-//                    })
-//                    .setNegativeButton("Hủy", null)
-//                    .show();
-//            return true;
-//        }
-//        return super.onOptionsItemSelected(item);
-//    }
+    // @Override
+    // public void onCreateOptionsMenu(@NonNull Menu menu, @NonNull MenuInflater
+    // inflater) {
+    // // Nếu user là admin, show thêm menu reset data
+    // SessionManager.SessionUser currentUser = getCurrentUser();
+    // if (currentUser != null && currentUser.getRole() == UserRole.ADMIN) {
+    // menu.add(0, R.id.menu_reset_data, 0, "Reset Sample Data")
+    // .setIcon(R.drawable.ic_settings)
+    // .setShowAsAction(MenuItem.SHOW_AS_ACTION_NEVER);
+    // }
+    // super.onCreateOptionsMenu(menu, inflater);
+    // }
+    //
+    // @Override
+    // public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+    // if (item.getItemId() == R.id.menu_reset_data) {
+    // // Confirm dialog trước khi reset
+    // new AlertDialog.Builder(requireContext())
+    // .setTitle("Reset Sample Data")
+    // .setMessage("Xóa toàn bộ data và insert lại sample data?")
+    // .setPositiveButton("Reset", (dialog, which) -> {
+    // if (getActivity() instanceof MainActivity) {
+    // ((MainActivity) getActivity()).resetSampleData();
+    // Toast.makeText(getContext(), "Đã reset sample data!",
+    // Toast.LENGTH_SHORT).show();
+    // }
+    // })
+    // .setNegativeButton("Hủy", null)
+    // .show();
+    // return true;
+    // }
+    // return super.onOptionsItemSelected(item);
+    // }
 
     private void initViews(View view) {
         layoutNotLoggedIn = view.findViewById(R.id.layout_not_logged_in);
@@ -133,13 +136,13 @@ public class ProfileFragment extends BaseFragment {
         });
 
         cardOrders.setOnClickListener(v -> {
-            // TODO: Navigate to order history
-            Toast.makeText(getContext(), "Lịch sử đơn hàng", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), com.example.oss.activity.OrderHistoryActivity.class);
+            startActivity(intent);
         });
 
         cardAddresses.setOnClickListener(v -> {
-            // TODO: Navigate to address management
-            Toast.makeText(getContext(), "Quản lý địa chỉ", Toast.LENGTH_SHORT).show();
+            Intent intent = new Intent(getContext(), AddressManagementActivity.class);
+            startActivity(intent);
         });
 
         cardChangePassword.setOnClickListener(v -> {

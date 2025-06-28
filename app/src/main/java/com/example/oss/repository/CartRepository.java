@@ -106,6 +106,19 @@ public class CartRepository {
         });
     }
 
+    // Synchronous operations for order processing
+    public List<Cart> getCartItemsSync(int userId) {
+        return cartDao.getCartItemsSync(userId);
+    }
+
+    public List<CartDao.CartWithProduct> getCartWithProductsSync(int userId) {
+        return cartDao.getCartWithProductsSync(userId);
+    }
+
+    public void clearCartSync(int userId) {
+        cartDao.clearCartByUser(userId);
+    }
+
     // Helper class
     public static class CartSummary {
         private int totalItems;

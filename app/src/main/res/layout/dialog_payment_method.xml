@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:background="@color/surface">
+
+    <!-- Toolbar -->
+    <com.google.android.material.appbar.MaterialToolbar
+        android:id="@+id/toolbar"
+        android:layout_width="match_parent"
+        android:layout_height="?attr/actionBarSize"
+        android:background="@color/surface"
+        app:titleTextColor="@color/on_surface" />
+
+    <!-- Content -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="24dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Chọn phương thức thanh toán phù hợp với bạn"
+            android:textSize="14sp"
+            android:textColor="@color/on_surface_variant"
+            android:layout_marginBottom="24dp" />
+
+        <RadioGroup
+            android:id="@+id/radio_group_payment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="24dp">
+
+            <!-- Cash on Delivery -->
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radio_cash"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Thanh toán khi nhận hàng (COD)"
+                android:textSize="16sp"
+                android:textColor="@color/on_surface"
+                android:padding="16dp"
+                android:background="@drawable/ripple_effect"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Credit/Debit Card -->
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radio_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Thẻ tín dụng/Ghi nợ"
+                android:textSize="16sp"
+                android:textColor="@color/on_surface"
+                android:padding="16dp"
+                android:background="@drawable/ripple_effect"
+                android:layout_marginBottom="8dp" />
+
+            <!-- Bank Transfer -->
+            <com.google.android.material.radiobutton.MaterialRadioButton
+                android:id="@+id/radio_transfer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="Chuyển khoản ngân hàng"
+                android:textSize="16sp"
+                android:textColor="@color/on_surface"
+                android:padding="16dp"
+                android:background="@drawable/ripple_effect" />
+
+        </RadioGroup>
+
+        <!-- Action Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="end">
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_cancel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Hủy"
+                android:layout_marginEnd="8dp"
+                style="@style/Widget.Material3.Button.TextButton" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_confirm"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Xác nhận"
+                app:cornerRadius="8dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</LinearLayout> 

@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- Material Design 3 Primary Colors - Dark -->
+    <color name="primary">#D0BCFF</color>
+    <color name="on_primary">#371E73</color>
+    <color name="primary_container">#4F378B</color>
+    <color name="on_primary_container">#EADDFF</color>
+    
+    <!-- Material Design 3 Secondary Colors - Dark -->
+    <color name="secondary">#CCC2DC</color>
+    <color name="on_secondary">#332D41</color>
+    <color name="secondary_container">#4A4458</color>
+    <color name="on_secondary_container">#E8DEF8</color>
+    
+    <!-- Material Design 3 Tertiary Colors - Dark -->
+    <color name="tertiary">#EFB8C8</color>
+    <color name="on_tertiary">#492532</color>
+    <color name="tertiary_container">#633B48</color>
+    <color name="on_tertiary_container">#FFD8E4</color>
+    
+    <!-- Material Design 3 Error Colors - Dark -->
+    <color name="error">#FFB4AB</color>
+    <color name="on_error">#690005</color>
+    <color name="error_container">#93000A</color>
+    <color name="on_error_container">#FFDAD6</color>
+    
+    <!-- Material Design 3 Success Colors - Dark -->
+    <color name="success">#8AD5A8</color>
+    <color name="on_success">#003920</color>
+    <color name="success_container">#00522B</color>
+    <color name="on_success_container">#A6F1C2</color>
+    
+    <!-- Material Design 3 Warning Colors - Dark -->
+    <color name="warning">#FFB68A</color>
+    <color name="on_warning">#4A2800</color>
+    <color name="warning_container">#6B3C00</color>
+    <color name="on_warning_container">#FFDCC2</color>
+    
+    <!-- Material Design 3 Info Colors - Dark -->
+    <color name="info">#9FCAFF</color>
+    <color name="on_info">#003258</color>
+    <color name="info_container">#00497D</color>
+    <color name="on_info_container">#D1E4FF</color>
+    
+    <!-- Material Design 3 Surface Colors - Dark -->
+    <color name="surface">#1C1B1F</color>
+    <color name="on_surface">#E6E1E5</color>
+    <color name="on_surface_variant">#CAC4D0</color>
+    <color name="surface_variant">#49454F</color>
+    <color name="outline">#938F99</color>
+    <color name="outline_variant">#49454F</color>
+    <color name="surface_container">#211F26</color>
+    <color name="surface_container_high">#2B2930</color>
+    <color name="surface_container_highest">#36343B</color>
+    <color name="surface_container_low">#1C1B1F</color>
+    <color name="surface_container_lowest">#0F0D13</color>
+    
+    <!-- Material Design 3 Background Colors - Dark -->
+    <color name="background">#1C1B1F</color>
+    <color name="on_background">#E6E1E5</color>
+</resources> 
