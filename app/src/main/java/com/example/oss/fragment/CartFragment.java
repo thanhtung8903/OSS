@@ -1,5 +1,6 @@
 package com.example.oss.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,18 +19,13 @@ import com.example.oss.R;
 import com.example.oss.adapter.CartAdapter;
 import com.example.oss.dao.CartDao;
 import com.example.oss.viewmodel.CartViewModel;
+import com.example.oss.activity.CheckoutActivity;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.card.MaterialCardView;
 
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
-
-import com.example.oss.adapter.CartAdapter;
-import com.example.oss.dao.CartDao;
-import com.example.oss.viewmodel.CartViewModel;
-
-import java.util.ArrayList;
 
 public class CartFragment extends BaseFragment {
 
@@ -51,7 +47,7 @@ public class CartFragment extends BaseFragment {
     @Nullable
     @Override
     public View onCreateView(@NonNull LayoutInflater inflater, @Nullable ViewGroup container,
-                             @Nullable Bundle savedInstanceState) {
+            @Nullable Bundle savedInstanceState) {
         return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
@@ -236,7 +232,6 @@ public class CartFragment extends BaseFragment {
             totalAmount = cartAdapter.getTotalAmount().doubleValue();
             totalItems = cartAdapter.getTotalQuantity();
 
-
         } catch (Exception e) {
             // Fallback nếu có lỗi
             totalAmount = 0.0;
@@ -299,12 +294,11 @@ public class CartFragment extends BaseFragment {
             }
         }
 
-
     }
 
     private void performCheckout() {
-        // TODO: Navigate to checkout process
-        Toast.makeText(getContext(), "Đang chuyển đến thanh toán...", Toast.LENGTH_SHORT).show();
+        Intent intent = new Intent(getContext(), CheckoutActivity.class);
+        startActivity(intent);
     }
 
     private void showNotLoggedInUI() {

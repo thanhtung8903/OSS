@@ -1,34 +1,109 @@
-<!-- app/src/main/res/values/colors.xml -->
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
-
-    <!-- Primary Colors -->
-    <color name="primary">#1976D2</color>
-    <color name="primary_variant">#1565C0</color>
-    <color name="primary_container">#E3F2FD</color>
-
-    <!-- Secondary Colors -->
-    <color name="secondary">#FF9800</color>
-    <color name="secondary_variant">#F57C00</color>
-    <color name="secondary_container">#FFF3E0</color>
-
-    <!-- Surface Colors -->
-    <color name="background">#FAFAFA</color>
-    <color name="surface">#FFFFFF</color>
-    <color name="surface_variant">#F5F5F5</color>
-
-    <!-- Text Colors -->
+    
+    <!-- Material Design 3 Primary Colors -->
+    <color name="primary">#6750A4</color>
     <color name="on_primary">#FFFFFF</color>
-    <color name="on_secondary">#000000</color>
-    <color name="on_background">#212121</color>
-    <color name="on_surface">#212121</color>
-    <color name="on_surface_variant">#757575</color>
+    <color name="primary_container">#EADDFF</color>
+    <color name="on_primary_container">#21005D</color>
+    
+    <!-- Material Design 3 Secondary Colors -->
+    <color name="secondary">#625B71</color>
+    <color name="on_secondary">#FFFFFF</color>
+    <color name="secondary_container">#E8DEF8</color>
+    <color name="on_secondary_container">#1D192B</color>
+    
+    <!-- Material Design 3 Tertiary Colors -->
+    <color name="tertiary">#7D5260</color>
+    <color name="on_tertiary">#FFFFFF</color>
+    <color name="tertiary_container">#FFD8E4</color>
+    <color name="on_tertiary_container">#31111D</color>
+    
+    <!-- Material Design 3 Error Colors -->
+    <color name="error">#BA1A1A</color>
+    <color name="on_error">#FFFFFF</color>
+    <color name="error_container">#FFDAD6</color>
+    <color name="on_error_container">#410002</color>
+    
+    <!-- Material Design 3 Success Colors -->
+    <color name="success">#006D3B</color>
+    <color name="on_success">#FFFFFF</color>
+    <color name="success_container">#A6F1C2</color>
+    <color name="on_success_container">#002110</color>
+    
+    <!-- Material Design 3 Warning Colors -->
+    <color name="warning">#8B5000</color>
+    <color name="on_warning">#FFFFFF</color>
+    <color name="warning_container">#FFDCC2</color>
+    <color name="on_warning_container">#2E1500</color>
+    
+    <!-- Material Design 3 Info Colors -->
+    <color name="info">#0061A4</color>
+    <color name="on_info">#FFFFFF</color>
+    <color name="info_container">#D1E4FF</color>
+    <color name="on_info_container">#001D36</color>
+    
+    <!-- Material Design 3 Surface Colors -->
+    <color name="surface">#FFFBFE</color>
+    <color name="on_surface">#1C1B1F</color>
+    <color name="on_surface_variant">#49454F</color>
+    <color name="surface_variant">#E7E0EC</color>
+    <color name="outline">#79747E</color>
+    <color name="outline_variant">#CAC4D0</color>
+    <color name="surface_container">#F3EDF7</color>
+    <color name="surface_container_high">#ECE6F0</color>
+    <color name="surface_container_highest">#E6E0E9</color>
+    <color name="surface_container_low">#F7F2FA</color>
+    <color name="surface_container_lowest">#FFFFFF</color>
+    
+    <!-- Material Design 3 Background Colors -->
+    <color name="background">#FFFBFE</color>
+    <color name="on_background">#1C1B1F</color>
+    
+    <!-- Material Blue Grey Colors -->
+    <color name="material_color_blue_grey_50">#ECEFF1</color>
+    <color name="material_color_blue_grey_100">#CFD8DC</color>
+    <color name="material_color_blue_grey_200">#B0BEC5</color>
+    <color name="material_color_blue_grey_300">#90A4AE</color>
+    <color name="material_color_blue_grey_400">#78909C</color>
+    <color name="material_color_blue_grey_500">#607D8B</color>
+    <color name="material_color_blue_grey_600">#546E7A</color>
+    <color name="material_color_blue_grey_700">#455A64</color>
+    <color name="material_color_blue_grey_800">#37474F</color>
+    <color name="material_color_blue_grey_900">#263238</color>
 
-    <!-- System Colors -->
-    <color name="error">#F44336</color>
-    <color name="success">#4CAF50</color>
-    <color name="warning">#FF9800</color>
-    <color name="outline">#E0E0E0</color>
-    <color name="outline_variant">#EEEEEE</color>
+    <!-- Gray Colors -->
+    <color name="gray_50">#FAFAFA</color>
+    <color name="gray_100">#F5F5F5</color>
+    <color name="gray_200">#EEEEEE</color>
+    <color name="gray_300">#E0E0E0</color>
+    <color name="gray_400">#BDBDBD</color>
+    <color name="gray_500">#9E9E9E</color>
+    <color name="gray_600">#757575</color>
+    <color name="gray_700">#616161</color>
+    <color name="gray_800">#424242</color>
+    <color name="gray_900">#212121</color>
+
+    <!-- Legacy Colors (for backward compatibility) -->
+    <color name="primary_color">@color/primary</color>
+    <color name="primary_dark">#5B3E96</color>
+    <color name="primary_light">@color/primary_container</color>
+    
+    <color name="secondary_color">@color/secondary</color>
+    <color name="secondary_dark">#4A4458</color>
+    <color name="secondary_light">@color/secondary_container</color>
+
+    <!-- Status Colors (Legacy) -->
+    <color name="success_color">@color/success</color>
+    <color name="warning_color">@color/warning</color>
+    <color name="error_color">@color/error</color>
+    <color name="info_color">@color/info</color>
+
+    <!-- Address Type Colors -->
+    <color name="address_home">@color/success</color>
+    <color name="address_office">@color/warning</color>
+    <color name="address_other">#9C27B0</color>
+    <color name="address_default">@color/error</color>
 </resources>

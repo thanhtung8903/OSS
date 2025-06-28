@@ -29,4 +29,40 @@
     <string name="error_invalid_phone">Số điện thoại không hợp lệ</string>
     <string name="error_login_failed">Đăng nhập thất bại</string>
     <string name="error_register_failed">Đăng ký thất bại</string>
+
+    <!-- Address Management -->
+    <string name="address_management">Quản lý địa chỉ</string>
+    <string name="add_new_address">Thêm địa chỉ mới</string>
+    <string name="edit_address">Chỉnh sửa địa chỉ</string>
+    <string name="delete_address">Xóa địa chỉ</string>
+    <string name="set_as_default">Đặt làm mặc định</string>
+    <string name="default_address">Mặc định</string>
+    <string name="receiver_name">Tên người nhận</string>
+    <string name="street_address">Địa chỉ cụ thể</string>
+    <string name="district">Quận/Huyện</string>
+    <string name="city_province">Tỉnh/Thành phố</string>
+    <string name="postal_code">Mã bưu điện</string>
+    <string name="address_type">Loại địa chỉ</string>
+    
+    <!-- Order History -->
+    <string name="order_history">Lịch sử đơn hàng</string>
+    <string name="order_detail">Chi tiết đơn hàng</string>
+    <string name="no_orders_message">Bạn chưa có đơn hàng nào.\nHãy khám phá và mua sắm ngay!</string>
+    <string name="start_shopping">Bắt đầu mua sắm</string>
+    <string name="order_status_pending">Chờ xác nhận</string>
+    <string name="order_status_confirmed">Đã xác nhận</string>
+    <string name="order_status_shipped">Đang giao</string>
+    <string name="order_status_delivered">Đã giao</string>
+    <string name="order_status_cancelled">Đã hủy</string>
+    <string name="cancel_order">Hủy đơn</string>
+    <string name="reorder">Mua lại</string>
+    <string name="view_detail">Chi tiết</string>
+    <string name="order_date">Ngày đặt hàng:</string>
+    <string name="shipping_address">Địa chỉ giao hàng:</string>
+    <string name="payment_method">Phương thức thanh toán:</string>
+    <string name="ordered_products">Sản phẩm đã đặt</string>
+    <string name="order_summary">Tóm tắt đơn hàng</string>
+    <string name="subtotal">Tạm tính:</string>
+    <string name="shipping_fee">Phí vận chuyển:</string>
+    <string name="total_amount">Tổng cộng:</string>
 </resources>

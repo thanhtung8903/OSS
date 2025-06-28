@@ -90,6 +90,9 @@ public interface CartDao {
     @Query("DELETE FROM cart WHERE user_id = :userId")
     void clearCart(int userId);
 
+    @Query("DELETE FROM cart WHERE user_id = :userId")
+    void clearCartByUser(int userId);
+
     @Query("UPDATE cart SET quantity = :quantity WHERE user_id = :userId AND product_id = :productId")
     void updateQuantity(int userId, int productId, int quantity);
 

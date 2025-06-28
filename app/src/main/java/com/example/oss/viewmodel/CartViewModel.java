@@ -9,6 +9,7 @@ import com.example.oss.dao.CartDao;
 import com.example.oss.repository.CartRepository;
 import com.example.oss.util.SessionManager;
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.List;
 
 public class CartViewModel extends AndroidViewModel {
@@ -76,6 +77,14 @@ public class CartViewModel extends AndroidViewModel {
             return cartRepository.getCartTotal(userId);
         }
         return new MutableLiveData<>(BigDecimal.ZERO);
+    }
+
+    public LiveData<List<CartDao.CartWithProduct>> getCartWithProducts() {
+        SessionManager.SessionUser currentUser = getCurrentUser();
+        if (currentUser != null) {
+            return cartRepository.getCartWithProducts(currentUser.getId());
+        }
+        return new MutableLiveData<>(new ArrayList<>());
     }
 
     // Cart operations

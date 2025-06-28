@@ -19,6 +19,9 @@ public interface AddressDao {
     @Query("SELECT * FROM addresses WHERE user_id = :userId AND is_default = 1 LIMIT 1")
     Address getDefaultAddressSync(int userId);
 
+    @Query("SELECT * FROM addresses WHERE id = :id")
+    Address getAddressByIdSync(int id);
+
     @Query("SELECT COUNT(*) FROM addresses WHERE user_id = :userId")
     LiveData<Integer> getAddressCount(int userId);
 
