@@ -15,4 +15,9 @@
     <style name="HelperTextAppearance" parent="TextAppearance.Material3.BodySmall">
         <item name="android:textColor">@color/on_surface_variant</item>
     </style>
+
+    <!-- AppBar Overlay styles -->
+    <style name="Theme.OSS.AppBarOverlay" parent="ThemeOverlay.Material3.Dark.ActionBar" />
+
+    <style name="Theme.OSS.PopupOverlay" parent="ThemeOverlay.Material3.Light" />
 </resources>
