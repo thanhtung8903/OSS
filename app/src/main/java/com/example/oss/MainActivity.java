@@ -30,9 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(MainActivity.this, CategoryManagementActivity.class);
-
-        startActivity(intent);
+       
         // Initialize SampleDataManager và load sample data
         initializeSampleData();
 
