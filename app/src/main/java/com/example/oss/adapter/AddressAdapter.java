@@ -64,9 +64,9 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
 
     class AddressViewHolder extends RecyclerView.ViewHolder {
         private TextView tvRecipientName, tvAddressType, tvPhoneNumber, tvFullAddress;
-        private TextView tvDefaultBadge;
+        private View layoutDefaultBadge;
         private ImageView ivEdit, ivDelete, ivSetDefault;
-        private View layoutActions;
+        private View layoutActions, btnSetDefault;
 
         public AddressViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -74,10 +74,11 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
             tvAddressType = itemView.findViewById(R.id.tv_address_type);
             tvPhoneNumber = itemView.findViewById(R.id.tv_phone_number);
             tvFullAddress = itemView.findViewById(R.id.tv_full_address);
-            tvDefaultBadge = itemView.findViewById(R.id.layout_default);
+            layoutDefaultBadge = itemView.findViewById(R.id.layout_default);
             ivEdit = itemView.findViewById(R.id.iv_edit);
             ivDelete = itemView.findViewById(R.id.iv_delete);
             ivSetDefault = itemView.findViewById(R.id.iv_set_default);
+            btnSetDefault = itemView.findViewById(R.id.btn_set_default);
             layoutActions = itemView;
         }
 
@@ -97,7 +98,7 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
             tvAddressType.setBackgroundResource(getAddressTypeBackground(addressType));
 
             // Show/hide default badge
-            tvDefaultBadge.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
+            layoutDefaultBadge.setVisibility(address.isDefault() ? View.VISIBLE : View.GONE);
 
             if (isSelectionMode) {
                 // Hide action buttons in selection mode
@@ -126,14 +127,57 @@ public class AddressAdapter extends RecyclerView.Adapter<AddressAdapter.AddressV
                     }
                 });
 
-                ivSetDefault.setOnClickListener(v -> {
+                // Set click listener cho cả button và icon
+                View.OnClickListener setDefaultListener = v -> {
                     if (listener != null) {
-                        listener.onAddressSetDefault(address);
+                        if (address.isDefault()) {
+                            // Không cho phép bỏ mặc định - hiển thị thông báo
+                            android.widget.Toast.makeText(v.getContext(),
+                                    "Không thể bỏ địa chỉ mặc định. Vui lòng chọn địa chỉ khác làm mặc định trước.",
+                                    android.widget.Toast.LENGTH_SHORT).show();
+                        } else {
+                            listener.onAddressSetDefault(address);
+                        }
                     }
-                });
+                };
 
-                // Hide set default button if already default
-                ivSetDefault.setVisibility(address.isDefault() ? View.GONE : View.VISIBLE);
+                ivSetDefault.setOnClickListener(setDefaultListener);
+                btnSetDefault.setOnClickListener(setDefaultListener);
+
+                // Thay đổi icon và text dựa trên trạng thái default
+                TextView tvDefaultText = btnSetDefault.findViewById(android.R.id.text1);
+                if (tvDefaultText == null) {
+                    // Tìm TextView trong LinearLayout
+                    if (btnSetDefault instanceof android.widget.LinearLayout) {
+                        android.widget.LinearLayout layout = (android.widget.LinearLayout) btnSetDefault;
+                        for (int i = 0; i < layout.getChildCount(); i++) {
+                            if (layout.getChildAt(i) instanceof TextView) {
+                                tvDefaultText = (TextView) layout.getChildAt(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+
+                if (address.isDefault()) {
+                    ivSetDefault.setImageResource(R.drawable.ic_favorite);
+                    ivSetDefault.setColorFilter(itemView.getContext().getColor(R.color.error));
+                    if (tvDefaultText != null) {
+                        tvDefaultText.setText("Đã mặc định");
+                        tvDefaultText.setTextColor(itemView.getContext().getColor(R.color.error));
+                    }
+                } else {
+                    ivSetDefault.setImageResource(R.drawable.ic_favorite_border);
+                    ivSetDefault.setColorFilter(itemView.getContext().getColor(R.color.on_surface_variant));
+                    if (tvDefaultText != null) {
+                        tvDefaultText.setText("Đặt mặc định");
+                        tvDefaultText.setTextColor(itemView.getContext().getColor(R.color.on_surface_variant));
+                    }
+                }
+
+                // Luôn hiển thị nút để người dùng có thể thấy trạng thái
+                ivSetDefault.setVisibility(View.VISIBLE);
+                btnSetDefault.setVisibility(View.VISIBLE);
             }
         }
 
