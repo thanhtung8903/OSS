@@ -43,7 +43,7 @@
     <string name="city_province">Tỉnh/Thành phố</string>
     <string name="postal_code">Mã bưu điện</string>
     <string name="address_type">Loại địa chỉ</string>
-    
+
     <!-- Order History -->
     <string name="order_history">Lịch sử đơn hàng</string>
     <string name="order_detail">Chi tiết đơn hàng</string>
@@ -65,4 +65,15 @@
     <string name="subtotal">Tạm tính:</string>
     <string name="shipping_fee">Phí vận chuyển:</string>
     <string name="total_amount">Tổng cộng:</string>
+
+    <!--Product-->
+    <string name="add_new_product">Add New Product</string>
+    <string name="product_name">Product Name</string>
+    <string name="product_quantity">Product Quantity</string>
+    <string name="product_category">Product Category</string>
+    <string name="product_price">Product Price</string>
+    <string name="product_status">Product Status</string>
+    <string name="product_description">Product Description</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
