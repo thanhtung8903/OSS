@@ -86,6 +86,10 @@
     <color name="gray_800">#424242</color>
     <color name="gray_900">#212121</color>
 
+    <!-- Common Colors -->
+    <color name="red">#F44336</color>
+    <color name="gray">#757575</color>
+
     <!-- Legacy Colors (for backward compatibility) -->
     <color name="primary_color">@color/primary</color>
     <color name="primary_dark">#5B3E96</color>

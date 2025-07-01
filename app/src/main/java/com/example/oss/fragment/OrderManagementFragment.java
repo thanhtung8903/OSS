@@ -1,6 +1,5 @@
 package com.example.oss.fragment;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.fragment.app.Fragment;
@@ -8,18 +7,15 @@ import androidx.fragment.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 
 import com.example.oss.R;
-import com.example.oss.activity.CategoryManagementActivity;
-import com.google.android.material.card.MaterialCardView;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link AdminFragment#newInstance} factory method to
+ * Use the {@link OrderManagementFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class AdminFragment extends Fragment {
+public class OrderManagementFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -30,9 +26,7 @@ public class AdminFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private MaterialCardView cardManageCategories;
-
-    public AdminFragment() {
+    public OrderManagementFragment() {
         // Required empty public constructor
     }
 
@@ -42,11 +36,11 @@ public class AdminFragment extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment AdminFragment.
+     * @return A new instance of fragment OrderManagementFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static AdminFragment newInstance(String param1, String param2) {
-        AdminFragment fragment = new AdminFragment();
+    public static OrderManagementFragment newInstance(String param1, String param2) {
+        OrderManagementFragment fragment = new OrderManagementFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -67,21 +61,6 @@ public class AdminFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_admin, container, false);
-        
-        // Initialize views
-        cardManageCategories = view.findViewById(R.id.card_manage_categories);
-        
-        // Setup click listeners
-        setupClickListeners();
-        
-        return view;
-    }
-
-    private void setupClickListeners() {
-        cardManageCategories.setOnClickListener(v -> {
-            Intent intent = new Intent(getActivity(), CategoryManagementActivity.class);
-            startActivity(intent);
-        });
+        return inflater.inflate(R.layout.fragment_order_management, container, false);
     }
 }

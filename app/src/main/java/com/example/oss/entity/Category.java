@@ -5,13 +5,22 @@ import androidx.room.PrimaryKey;
 import androidx.room.ColumnInfo;
 import androidx.room.ForeignKey;
 import androidx.room.Index;
+
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 
-@Entity(tableName = "categories", foreignKeys = @ForeignKey(entity = Category.class, parentColumns = "id", childColumns = "parent_id", onDelete = ForeignKey.SET_NULL), indices = {
-        @Index("parent_id") })
+@Entity(
+        tableName = "categories",
+        foreignKeys = @ForeignKey(
+                entity = Category.class,
+                parentColumns = "id",
+                childColumns = "parent_id",
+                onDelete = ForeignKey.SET_NULL
+        ),
+        indices = { @Index("parent_id") }
+)
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
