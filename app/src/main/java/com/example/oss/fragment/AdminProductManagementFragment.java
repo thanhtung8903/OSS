@@ -51,6 +51,12 @@ public class AdminProductManagementFragment extends Fragment {
 
     private void onEditProduct(int productId) {
         // TODO: Hiển thị dialog sửa sản phẩm
+        Product product = findProductById(productId);
+        if (product != null) {
+            AdminProductEditDialog dialog = AdminProductEditDialog.newInstance(product);
+            dialog.setOnProductSavedListener(updatedProduct -> viewModel.updateProduct(updatedProduct));
+            dialog.show(getParentFragmentManager(), "EditProductDialog");
+        }
     }
 
     private void onDeleteProduct(int productId) {
