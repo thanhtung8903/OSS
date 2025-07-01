@@ -20,7 +20,7 @@ import com.example.oss.util.Converters;
         Order.class,
         OrderItem.class,
         Cart.class
-}, version = 2, exportSchema = false)
+}, version = 3, exportSchema = false)
 @TypeConverters({ Converters.class })
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
