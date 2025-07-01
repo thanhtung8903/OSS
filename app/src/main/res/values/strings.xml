@@ -90,4 +90,7 @@
     <string name="category_has_products">Danh mục này có %d sản phẩm</string>
     <string name="delete_subcategories_first">Vui lòng xóa tất cả danh mục con và sản phẩm trước khi xóa danh mục này</string>
     <string name="checking_category">Đang kiểm tra...</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+
 </resources>
