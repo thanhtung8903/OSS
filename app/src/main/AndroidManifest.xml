@@ -78,6 +78,20 @@
         <activity
             android:name=".activity.OrderDetailActivity"
             android:exported="false" />
+
+        <!-- Category Management Activity -->
+        <activity
+            android:name=".activity.CategoryManagementActivity"
+            android:theme="@style/Theme.OSS"
+            android:parentActivityName=".MainActivity"
+            android:label="@string/category_management" />
+
+        <!-- Add/Edit Category Activity -->
+        <activity
+            android:name=".activity.AddEditCategoryActivity"
+            android:theme="@style/Theme.OSS"
+            android:parentActivityName=".activity.CategoryManagementActivity"
+            android:windowSoftInputMode="adjustResize" />
     </application>
 
 </manifest>

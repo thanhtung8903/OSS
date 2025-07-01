@@ -63,4 +63,73 @@ public class CategoryRepository {
         Category category = new Category(name, description, parentId);
         insertCategory(category);
     }
+
+    // Methods để kiểm tra category có thể xóa được không
+    public boolean canDeleteCategory(int categoryId) {
+        try {
+            int subCategoryCount = categoryDao.hasSubCategories(categoryId);
+            int productCount = categoryDao.hasProducts(categoryId);
+            
+            // Có thể xóa nếu không có sub-categories và không có products
+            return subCategoryCount == 0 && productCount == 0;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    public String getDeleteErrorMessage(int categoryId) {
+        try {
+            int subCategoryCount = categoryDao.hasSubCategories(categoryId);
+            int productCount = categoryDao.hasProducts(categoryId);
+            
+            StringBuilder errorMessage = new StringBuilder();
+            boolean hasError = false;
+            
+            if (subCategoryCount > 0) {
+                errorMessage.append("🔸 Có ").append(subCategoryCount).append(" danh mục con\n");
+                hasError = true;
+            }
+            
+            if (productCount > 0) {
+                errorMessage.append("🔸 Có ").append(productCount).append(" sản phẩm\n");
+                hasError = true;
+            }
+            
+            if (hasError) {
+                errorMessage.append("\n📋 Để xóa được danh mục này, bạn cần:\n");
+                if (subCategoryCount > 0) {
+                    errorMessage.append("• Xóa tất cả ").append(subCategoryCount).append(" danh mục con trước\n");
+                }
+                if (productCount > 0) {
+                    errorMessage.append("• Xóa hoặc chuyển ").append(productCount).append(" sản phẩm sang danh mục khác\n");
+                }
+            } else {
+                errorMessage.append("❓ Lỗi không xác định");
+            }
+            
+            return errorMessage.toString();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "❌ Lỗi khi kiểm tra thông tin danh mục: " + e.getMessage();
+        }
+    }
+
+    public int getSubCategoryCount(int categoryId) {
+        try {
+            return categoryDao.getSubCategoryCount(categoryId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
+
+    public int getProductCountByCategory(int categoryId) {
+        try {
+            return categoryDao.getProductCountByCategory(categoryId);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return 0;
+        }
+    }
 }
