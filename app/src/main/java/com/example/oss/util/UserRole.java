@@ -1,8 +1,8 @@
 package com.example.oss.util;
 
 public enum UserRole {
-    ADMIN("admin"),
-    CUSTOMER("customer");
+    ADMIN("Admin"),
+    CUSTOMER("Customer");
 
     private final String value;
 

@@ -84,6 +84,28 @@
             android:theme="@style/Theme.OSS"
             android:parentActivityName=".activity.CategoryManagementActivity"
             android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".activity.UserManagementActivity"
+            android:theme="@style/Theme.OSS"
+            android:parentActivityName=".MainActivity"
+            android:label="Quản lý tài khoản" />
+
+        <activity
+            android:name=".activity.UserDetailActivity"
+            android:theme="@style/Theme.OSS"
+            android:parentActivityName=".activity.UserManagementActivity" />
+
+        <activity
+            android:name=".activity.EditUserStatusActivity"
+            android:theme="@style/Theme.OSS"
+            android:parentActivityName=".activity.UserManagementActivity"
+            android:windowSoftInputMode="adjustResize" />
+
+        <activity
+            android:name=".activity.AddUserActivity"
+            android:theme="@style/Theme.OSS"
+            android:parentActivityName=".activity.UserManagementActivity" />
     </application>
 
 </manifest>
