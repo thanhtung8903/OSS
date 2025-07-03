@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.lifecycle.ViewModelProvider;
 import com.example.oss.MainActivity;
 import com.example.oss.R;
@@ -153,6 +154,16 @@ public class ProfileFragment extends BaseFragment {
         cardSettings.setOnClickListener(v -> {
             // TODO: Navigate to settings
             Toast.makeText(getContext(), "Cài đặt", Toast.LENGTH_SHORT).show();
+            // Bắt đầu giao dịch Fragment
+            FragmentTransaction transaction = getFragmentManager().beginTransaction();
+
+            // Tạo instance mới của AdminProductManagementFragment
+            AdminProductManagementFragment fragment = new AdminProductManagementFragment();
+
+            // Thay thế fragment hiện tại bằng AdminProductManagementFragment
+            transaction.replace(R.id.fragment_container, fragment); // R.id.fragment_container là ID của container chứa các fragment
+            transaction.addToBackStack(null); // Để có thể quay lại fragment trước đó
+            transaction.commit(); // Thực thi giao dịch
         });
     }
 

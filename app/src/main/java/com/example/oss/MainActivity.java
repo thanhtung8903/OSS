@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
+import com.example.oss.activity.CategoryManagementActivity;
 import com.example.oss.fragment.AdminFragment;
 import com.example.oss.ui.auth.RegisterActivity;
 import com.example.oss.viewmodel.AuthViewModel;
@@ -29,7 +30,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+       
         // Initialize SampleDataManager và load sample data
         initializeSampleData();
 

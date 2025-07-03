@@ -31,4 +31,17 @@ public interface CategoryDao {
     // Methods cho sample data
     @Query("DELETE FROM categories")
     void deleteAllCategories();
+
+    // Methods để kiểm tra category có đang được sử dụng không
+    @Query("SELECT COUNT(*) FROM categories WHERE parent_id = :categoryId")
+    int getSubCategoryCount(int categoryId);
+
+    @Query("SELECT COUNT(*) FROM products WHERE category_id = :categoryId")
+    int getProductCountByCategory(int categoryId);
+
+    @Query("SELECT COUNT(*) FROM categories WHERE parent_id = :categoryId")
+    int hasSubCategories(int categoryId);
+
+    @Query("SELECT COUNT(*) FROM products WHERE category_id = :categoryId")
+    int hasProducts(int categoryId);
 }
