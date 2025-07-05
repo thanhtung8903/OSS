@@ -47,7 +47,7 @@ public class MainActivity extends AppCompatActivity {
 
         // Load default fragment
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+            loadFragment(new AdminFragment());
         }
     }
 

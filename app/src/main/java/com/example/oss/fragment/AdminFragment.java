@@ -31,6 +31,7 @@ public class AdminFragment extends Fragment {
     private String mParam2;
 
     private MaterialCardView cardManageCategories;
+    private MaterialCardView cardManageOrders;
 
     public AdminFragment() {
         // Required empty public constructor
@@ -68,13 +69,14 @@ public class AdminFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admin, container, false);
-        
+
         // Initialize views
         cardManageCategories = view.findViewById(R.id.card_manage_categories);
-        
+        cardManageOrders = view.findViewById(R.id.card_manage_orders);
+
         // Setup click listeners
         setupClickListeners();
-        
+
         return view;
     }
 
@@ -82,6 +84,16 @@ public class AdminFragment extends Fragment {
         cardManageCategories.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CategoryManagementActivity.class);
             startActivity(intent);
+        });
+
+        cardManageOrders.setOnClickListener(v -> {
+            OrderManagementFragment fragment = new OrderManagementFragment();
+
+            requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, fragment)
+                    .addToBackStack(null)
+                    .commit();
         });
     }
 }
