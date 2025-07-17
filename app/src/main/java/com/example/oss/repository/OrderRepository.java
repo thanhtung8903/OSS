@@ -5,6 +5,8 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
 import androidx.lifecycle.Observer;
 
+import com.example.oss.bean.OrderData;
+import com.example.oss.bean.OrderStatistics;
 import com.example.oss.database.AppDatabase;
 import com.example.oss.dao.OrderDao;
 import com.example.oss.dao.OrderItemDao;
@@ -46,8 +48,8 @@ public class OrderRepository {
         return orderDao.getOrdersByUser(userId);
     }
 
-    public LiveData<List<com.example.oss.bean.OrderDisplay>> getAllOrderManagementDisplays() {
-        MediatorLiveData<List<com.example.oss.bean.OrderDisplay>> result = new MediatorLiveData<>();
+    public LiveData<OrderData> getAllOrderManagementDisplays() {
+        MediatorLiveData<OrderData> result = new MediatorLiveData<>();
 
         // Lấy danh sách Orders kèm thông tin khách hàng
         LiveData<List<OrderDao.OrdersWithCustomer>> ordersLiveData = orderDao.getOrdersWithCustomer();
@@ -59,13 +61,17 @@ public class OrderRepository {
                 ordersLiveData.removeObserver(this);
 
                 if (ordersWithCustomers == null || ordersWithCustomers.isEmpty()) {
-                    result.setValue(new ArrayList<>());
+                    result.setValue(new OrderData(new ArrayList<>(), new OrderStatistics(0, 0, 0)));
                     return;
                 }
 
                 List<com.example.oss.bean.OrderDisplay> tempList = Collections.synchronizedList(new ArrayList<>());
                 AtomicInteger loadedCount = new AtomicInteger(0);
                 int totalOrders = ordersWithCustomers.size();
+
+                // Sử dụng AtomicInteger để lưu trữ thống kê
+                AtomicInteger pendingOrders = new AtomicInteger(0);
+                AtomicInteger completedOrders = new AtomicInteger(0);
 
                 for (OrderDao.OrdersWithCustomer orderWithCustomer : ordersWithCustomers) {
                     int orderId = orderWithCustomer.order.getId();
@@ -102,9 +108,22 @@ public class OrderRepository {
                             display.productSummary = sb.toString();
                             tempList.add(display);
 
+                            switch (orderWithCustomer.order.getStatus()){
+                                case "Chờ xử lý":
+                                    pendingOrders.incrementAndGet();
+                                    break;
+                                case "Đã hoàn thành":
+                                    completedOrders.incrementAndGet();
+                                    break;
+                                    // thêm các trạng thái khác nếu cần
+                            }
+
                             // Khi đã xử lý đủ tất cả đơn hàng
                             if (loadedCount.incrementAndGet() == totalOrders) {
-                                result.setValue(new ArrayList<>(tempList));
+                                OrderStatistics statistics = new OrderStatistics(totalOrders, pendingOrders.get(), completedOrders.get());
+
+                                OrderData orderData = new OrderData(new ArrayList<>(tempList), statistics);
+                                result.setValue(orderData);
                             }
                         }
                     });
@@ -114,8 +133,6 @@ public class OrderRepository {
 
         return result;
     }
-
-
 
     public LiveData<Order> getOrderById(int id) {
         return orderDao.getOrderById(id);

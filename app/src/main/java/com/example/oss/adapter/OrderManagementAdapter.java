@@ -9,6 +9,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.oss.R;
+import com.example.oss.bean.OrderData;
 import com.example.oss.bean.OrderDisplay;
 import com.example.oss.entity.Order;
 import com.example.oss.entity.OrderItem;
@@ -38,7 +39,7 @@ public class OrderManagementAdapter extends RecyclerView.Adapter<OrderManagement
 
     @Override
     public void onBindViewHolder(@NonNull OrderManagementViewHolder holder, int position) {
-        OrderDisplay order = orders.get(position);
+        OrderDisplay  order = orders.get(position);
         holder.bind(order);
     }
 
@@ -47,7 +48,8 @@ public class OrderManagementAdapter extends RecyclerView.Adapter<OrderManagement
         return orders.size();
     }
 
-    public void updateData(List<OrderDisplay> newOrders){
+    public void updateData(List<OrderDisplay> newOrders)
+    {
         this.orders.clear();
         if (newOrders != null) {
             this.orders.addAll(newOrders);
@@ -81,17 +83,18 @@ public class OrderManagementAdapter extends RecyclerView.Adapter<OrderManagement
             btnUpdateStatus = itemView.findViewById(R.id.btn_update_status);
         }
 
-        public void bind(OrderDisplay order){
-            tvOrderId.setText("Mã đơn #" + order.orderId);
+        public void bind(OrderDisplay orderDisplay)
+        {
+            tvOrderId.setText("Mã đơn #" + orderDisplay.orderId);
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy HH:mm", Locale.getDefault());
-            tvOrderDate.setText(sdf.format(order.orderDate)); // có thể format đẹp hơn
-            tvOrderStatus.setText(order.orderStatus);
-            tvCustomerName.setText(order.customerName);
-            tvOrderItems.setText(order.productSummary);
+            tvOrderDate.setText(sdf.format(orderDisplay.orderDate));
+            tvOrderStatus.setText(orderDisplay.orderStatus);
+            tvCustomerName.setText(orderDisplay.customerName);
+            tvOrderItems.setText(orderDisplay.productSummary);
             NumberFormat nf = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-            tvTotalAmount.setText(nf.format(order.totalAmount));
-            tvPaymentMethod.setText(order.paymentMethod);
-            tvItemCount.setText(order.itemCount + " sản phẩm");
+            tvTotalAmount.setText(nf.format(orderDisplay.totalAmount));
+            tvPaymentMethod.setText(orderDisplay.paymentMethod);
+            tvItemCount.setText(orderDisplay.itemCount + " sản phẩm");
 
             btnViewDetails.setOnClickListener(v -> {
                 // Xử lý xem chi tiết

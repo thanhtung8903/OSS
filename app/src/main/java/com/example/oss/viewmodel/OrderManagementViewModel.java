@@ -16,7 +16,7 @@ public class OrderManagementViewModel extends AndroidViewModel {
     private MutableLiveData<Boolean> isLoading;
     private MutableLiveData<String> errorMessage;
     private MutableLiveData<SearchFilter.FilterState> currentFilter;
-    private final LiveData<List<com.example.oss.bean.OrderDisplay>> orderDisplays;
+    private final LiveData<com.example.oss.bean.OrderData> orderDisplays;
 
     public OrderManagementViewModel(Application application){
         super(application);
@@ -27,7 +27,7 @@ public class OrderManagementViewModel extends AndroidViewModel {
         orderDisplays = orderRepository.getAllOrderManagementDisplays();
     }
 
-    public LiveData<List<com.example.oss.bean.OrderDisplay>> getOrderDisplays() {
+    public LiveData<com.example.oss.bean.OrderData> getOrderDisplays() {
         return orderDisplays;
     }
     public LiveData<SearchFilter.FilterState> getCurrentFilter() {
