@@ -39,6 +39,12 @@ public interface OrderDao {
     @Query("SELECT * FROM orders WHERE order_date BETWEEN :startDate AND :endDate ORDER BY order_date DESC")
     LiveData<List<Order>> getOrdersByDateRange(Date startDate, Date endDate);
 
+    @Query("SELECT o.*, u.full_name AS customer_name " +
+            "From orders o " +
+            "INNER JOIN users u ON o.user_id = u.id " +
+            "ORDER BY o.order_date DESC")
+    LiveData<List<OrdersWithCustomer>> getOrdersWithCustomer();
+
     @Insert
     long insertOrder(Order order);
 
@@ -53,4 +59,12 @@ public interface OrderDao {
 
     @Query("DELETE FROM orders WHERE id = :orderId")
     void deleteOrderById(int orderId);
+
+    public static class OrdersWithCustomer{
+        @Embedded
+        public Order order;
+
+        @ColumnInfo(name = "customer_name")
+        public String customerName;
+    }
 }
