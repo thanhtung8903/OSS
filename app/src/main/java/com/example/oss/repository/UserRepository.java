@@ -22,10 +22,10 @@ public class UserRepository {
     private MutableLiveData<User> currentUser;
 
     public UserRepository(Application application) {
-        AppDatabase database = AppDatabase.getDatabase(application);
-        userDao = database.userDao();
+        AppDatabase db = AppDatabase.getDatabase(application);
+        userDao = db.userDao();
         allUsers = userDao.getAllUsers();
-        executor = Executors.newFixedThreadPool(2);
+        executor = Executors.newSingleThreadExecutor();
         currentUser = new MutableLiveData<>();
     }
 
@@ -34,8 +34,8 @@ public class UserRepository {
         return allUsers;
     }
 
-    public LiveData<User> getUserById(int id) {
-        return userDao.getUserById(id);
+    public LiveData<User> getUserById(int userId) {
+        return userDao.getUserById(userId);
     }
 
     public LiveData<User> getCurrentUser() {
@@ -154,6 +154,19 @@ public class UserRepository {
             return executor.submit(() -> userDao.getUserByIdSync(userId)).get();
         } catch (Exception e) {
             return null;
+        }
+    }
+
+    public void updateUserStatus(int userId, String newStatus) {
+        executor.execute(() -> userDao.updateUserStatus(userId, newStatus));
+    }
+
+    public boolean isEmailExists(String email) {
+        try {
+            User user = userDao.getUserByEmail(email);
+            return user != null;
+        } catch (Exception e) {
+            return false;
         }
     }
 }

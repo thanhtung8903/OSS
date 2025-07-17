@@ -12,6 +12,7 @@ import android.widget.LinearLayout;
 
 import com.example.oss.R;
 import com.example.oss.activity.CategoryManagementActivity;
+import com.example.oss.activity.UserManagementActivity;
 import com.google.android.material.card.MaterialCardView;
 
 /**
@@ -32,6 +33,7 @@ public class AdminFragment extends Fragment {
 
     private MaterialCardView cardManageCategories;
     private MaterialCardView cardManageOrders;
+    private MaterialCardView cardManageUsers;
 
     public AdminFragment() {
         // Required empty public constructor
@@ -74,6 +76,8 @@ public class AdminFragment extends Fragment {
         cardManageCategories = view.findViewById(R.id.card_manage_categories);
         cardManageOrders = view.findViewById(R.id.card_manage_orders);
 
+        cardManageUsers = view.findViewById(R.id.card_manage_users);
+
         // Setup click listeners
         setupClickListeners();
 
@@ -94,6 +98,11 @@ public class AdminFragment extends Fragment {
                     .replace(R.id.fragment_container, fragment)
                     .addToBackStack(null)
                     .commit();
+        });
+
+        cardManageUsers.setOnClickListener(v -> {
+            Intent intent = new Intent(getActivity(), UserManagementActivity.class);
+            startActivity(intent);
         });
     }
 }

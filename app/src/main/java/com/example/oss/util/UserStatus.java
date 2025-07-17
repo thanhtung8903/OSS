@@ -1,9 +1,9 @@
 package com.example.oss.util;
 
 public enum UserStatus {
-    ACTIVE("active"),
-    INACTIVE("inactive"),
-    BANNED("banned");
+    ACTIVE("Active"),
+    INACTIVE("Inactive"),
+    BANNED("Banned");
 
     private final String value;
 
