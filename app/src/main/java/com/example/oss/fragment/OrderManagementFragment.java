@@ -110,12 +110,7 @@ public class OrderManagementFragment extends Fragment {
         });
 
         btnBackOrderManagement = view.findViewById(R.id.btn_back_order_management);
-        btnBackOrderManagement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
+        btnBackOrderManagement.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
         return view;
     }
 }
