@@ -37,7 +37,7 @@ public class AddUserActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btn_cancel);
         tvError = findViewById(R.id.tv_error);
 
-        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new String[]{"Active", "Inactive"});
+        ArrayAdapter<String> statusAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, new String[]{"Active", "Banned"});
         statusAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerStatus.setAdapter(statusAdapter);
 
