@@ -8,15 +8,36 @@ import java.util.List;
 
 @Dao
 public interface ProductDao {
+
         @Query("SELECT * FROM products WHERE is_active = 1 ORDER BY name ASC")
         LiveData<List<Product>> getAllActiveProducts();
 
+        @Query("SELECT * FROM products ORDER BY name ASC")
+        LiveData<List<Product>> getAllProducts();
+  
         @Query("SELECT * FROM products WHERE category_id = :categoryId AND is_active = 1 ORDER BY name ASC")
         LiveData<List<Product>> getProductsByCategory(int categoryId);
 
         @Query("SELECT * FROM products WHERE id = :id")
         LiveData<Product> getProductById(int id);
 
+      @Query("SELECT * FROM products WHERE " +
+            "LOWER(name) LIKE LOWER('%' || :searchQuery || '%') " +
+            "ORDER BY name ASC")
+    LiveData<List<Product>> searchAllProducts(String searchQuery);
+
+    @Query("SELECT * FROM products WHERE " +
+            "category_id = :categoryId " +
+            "ORDER BY name ASC")
+    LiveData<List<Product>> getAllProductsByCategory(int categoryId);
+
+    @Query("SELECT * FROM products WHERE " +
+            "LOWER(name) LIKE LOWER('%' || :searchQuery || '%') " +
+            "AND category_id = :categoryId " +
+            "ORDER BY name ASC")
+    LiveData<List<Product>> searchAllProductsByCategory(String searchQuery, int categoryId);
+
+  
         @Query("SELECT * FROM products WHERE " +
                         "(LOWER(name) LIKE LOWER('%' || :searchQuery || '%') OR " +
                         " name LIKE '%' || :searchQuery || '%') " +

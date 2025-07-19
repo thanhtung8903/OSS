@@ -110,4 +110,7 @@
     <color name="address_office">@color/warning</color>
     <color name="address_other">#9C27B0</color>
     <color name="address_default">@color/error</color>
+
+    <!--Product Status-->
+    <color name="green">#388E3C</color>
 </resources>
