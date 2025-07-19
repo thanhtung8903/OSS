@@ -16,16 +16,30 @@ import java.util.List;
 public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.CategoryViewHolder> {
 
     private List<Category> categories;
+    private List<Category> displayCategories; // Categories với "Tất cả" item
     private OnCategoryClickListener onCategoryClickListener;
+    private int selectedCategoryId = -1; // -1 means "Tất cả" selected
+    private OnShowAllClickListener onShowAllClickListener;
 
     // Interface for click listener
     public interface OnCategoryClickListener {
         void onCategoryClick(Category category);
     }
 
+    // Interface for "Tất cả" click listener
+    public interface OnShowAllClickListener {
+        void onShowAllClick();
+    }
+
     public CategoryAdapter(List<Category> categories, OnCategoryClickListener onCategoryClickListener) {
         this.categories = categories != null ? categories : new ArrayList<>();
+        this.displayCategories = new ArrayList<>();
         this.onCategoryClickListener = onCategoryClickListener;
+        updateDisplayCategories();
+    }
+
+    public void setOnShowAllClickListener(OnShowAllClickListener onShowAllClickListener) {
+        this.onShowAllClickListener = onShowAllClickListener;
     }
 
     @NonNull
@@ -38,13 +52,18 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
 
     @Override
     public void onBindViewHolder(@NonNull CategoryViewHolder holder, int position) {
-        Category category = categories.get(position);
-        holder.bind(category);
+        if (position == 0) {
+            // "Tất cả" item
+            holder.bindShowAll(selectedCategoryId == -1);
+        } else {
+            Category category = categories.get(position - 1);
+            holder.bind(category, selectedCategoryId == category.getId());
+        }
     }
 
     @Override
     public int getItemCount() {
-        return categories.size();
+        return categories.size() + 1; // +1 for "Tất cả" item
     }
 
     // Update data
@@ -53,6 +72,23 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
         if (newCategories != null) {
             this.categories.addAll(newCategories);
         }
+        updateDisplayCategories();
+        notifyDataSetChanged();
+    }
+
+    private void updateDisplayCategories() {
+        displayCategories.clear();
+        displayCategories.addAll(categories);
+    }
+
+    // Selection methods
+    public void setSelectedCategory(int categoryId) {
+        this.selectedCategoryId = categoryId;
+        notifyDataSetChanged();
+    }
+
+    public void clearSelection() {
+        this.selectedCategoryId = -1;
         notifyDataSetChanged();
     }
 
@@ -67,7 +103,7 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
             tvCategoryName = itemView.findViewById(R.id.tv_category_name);
         }
 
-        public void bind(Category category) {
+        public void bind(Category category, boolean isSelected) {
             // Set category name
             tvCategoryName.setText(category.getName());
 
@@ -77,12 +113,48 @@ public class CategoryAdapter extends RecyclerView.Adapter<CategoryAdapter.Catego
                     null,
                     ivCategoryIcon);
 
+            // Set selection state
+            updateSelectionState(isSelected);
+
             // Set click listener
             itemView.setOnClickListener(v -> {
                 if (onCategoryClickListener != null) {
                     onCategoryClickListener.onCategoryClick(category);
                 }
             });
+        }
+
+        public void bindShowAll(boolean isSelected) {
+            // Set "Tất cả" text
+            tvCategoryName.setText("Tất cả");
+
+            // Set default icon
+            ivCategoryIcon.setImageResource(R.drawable.ic_category_default);
+
+            // Set selection state
+            updateSelectionState(isSelected);
+
+            // Set click listener
+            itemView.setOnClickListener(v -> {
+                if (onShowAllClickListener != null) {
+                    onShowAllClickListener.onShowAllClick();
+                }
+            });
+        }
+
+        private void updateSelectionState(boolean isSelected) {
+            if (isSelected) {
+                // Highlight selected category
+                itemView.setBackgroundResource(R.drawable.category_type_background);
+                tvCategoryName.setTextColor(itemView.getContext().getResources().getColor(R.color.primary));
+                ivCategoryIcon.setColorFilter(itemView.getContext().getResources().getColor(R.color.primary));
+            } else {
+                // Normal state
+                itemView.setBackgroundResource(R.drawable.category_icon_background);
+                tvCategoryName.setTextColor(itemView.getContext().getResources().getColor(R.color.on_surface));
+                ivCategoryIcon
+                        .setColorFilter(itemView.getContext().getResources().getColor(R.color.on_surface_variant));
+            }
         }
 
         private int getCategoryIcon(String categoryName) {

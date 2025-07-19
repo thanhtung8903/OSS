@@ -103,6 +103,9 @@ public class SearchFragment extends BaseFragment implements
         // Load initial data
         loadAvailablePriceRange();
 
+        // Debug: Force check database state on first load
+        productViewModel.debugDatabaseState("boxing");
+
         // Show initial search prompt
         showSearchPrompt();
     }
@@ -178,17 +181,23 @@ public class SearchFragment extends BaseFragment implements
             return true;
         });
 
-        // Filter button listeners
-        btnToggleFilters.setOnClickListener(v -> toggleFilterSection());
-        btnPriceFilter.setOnClickListener(v -> showPriceFilterDialog());
-        btnSortOptions.setOnClickListener(v -> showSortOptionsDialog());
-        btnClearFilters.setOnClickListener(v -> clearAllFilters());
+        // Filter button listeners - SIMPLIFIED
+        btnToggleFilters.setOnClickListener(
+                v -> Toast.makeText(getContext(), "Filters đã được đơn giản hóa", Toast.LENGTH_SHORT).show());
+        btnPriceFilter.setOnClickListener(
+                v -> Toast.makeText(getContext(), "Chỉ hỗ trợ tìm kiếm theo tên", Toast.LENGTH_SHORT).show());
+        btnSortOptions.setOnClickListener(
+                v -> Toast.makeText(getContext(), "Chỉ hỗ trợ tìm kiếm theo tên", Toast.LENGTH_SHORT).show());
+        btnClearFilters.setOnClickListener(v -> {
+            etSearch.setText("");
+            currentFilter.setSearchQuery("");
+            showSearchPrompt();
+        });
 
-        // Stock filter listener
+        // Stock filter listener - DISABLED
         cbInStockOnly.setOnCheckedChangeListener((buttonView, isChecked) -> {
-            currentFilter.setInStockOnly(isChecked);
-            updateActiveFiltersDisplay();
-            performSearch();
+            Toast.makeText(getContext(), "Filter đã được đơn giản hóa", Toast.LENGTH_SHORT).show();
+            cbInStockOnly.setChecked(false); // Reset to false
         });
     }
 
@@ -304,14 +313,44 @@ public class SearchFragment extends BaseFragment implements
     private void performSearch() {
         showLoadingState();
 
-        productViewModel.searchProductsAdvanced(currentFilter)
-                .observe(getViewLifecycleOwner(), products -> {
-                    if (products != null) {
-                        updateSearchResults(products);
-                    } else {
-                        showEmptyState();
-                    }
-                });
+        // Debug log to check search parameters
+        android.util.Log.d("SearchFragment", "Performing search with query: '" +
+                currentFilter.getSearchQuery() + "', categories: " +
+                currentFilter.getCategoryIdsList().size() + ", inStock: " +
+                currentFilter.isInStockOnly());
+
+        // Debug database state
+        productViewModel.debugDatabaseState(currentFilter.getSearchQuery());
+
+        // Use simple search instead of advanced search for reliability
+        String searchQuery = currentFilter.getSearchQuery();
+        if (searchQuery.isEmpty()) {
+            // Show all products if no search query
+            productViewModel.getAllProducts()
+                    .observe(getViewLifecycleOwner(), products -> {
+                        android.util.Log.d("SearchFragment", "All products returned " +
+                                (products != null ? products.size() : "null") + " products");
+
+                        if (products != null) {
+                            updateSearchResults(products);
+                        } else {
+                            showEmptyState();
+                        }
+                    });
+        } else {
+            // Use simple search for text queries
+            productViewModel.searchProducts(searchQuery)
+                    .observe(getViewLifecycleOwner(), products -> {
+                        android.util.Log.d("SearchFragment", "Simple search returned " +
+                                (products != null ? products.size() : "null") + " products");
+
+                        if (products != null) {
+                            updateSearchResults(products);
+                        } else {
+                            showEmptyState();
+                        }
+                    });
+        }
     }
 
     private void updateSearchResults(List<Product> products) {
@@ -322,8 +361,8 @@ public class SearchFragment extends BaseFragment implements
             productAdapter.updateProducts(products);
             updateResultsCount(products.size());
 
-            // Show filter section if we have results
-            layoutFilterSection.setVisibility(View.VISIBLE);
+            // Hide filter section for simplified search
+            layoutFilterSection.setVisibility(View.GONE);
         }
     }
 

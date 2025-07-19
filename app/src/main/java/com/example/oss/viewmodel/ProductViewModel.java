@@ -132,6 +132,25 @@ public class ProductViewModel extends AndroidViewModel {
         isLoading.postValue(false);
     }
 
+    // Debug method
+    public void debugDatabaseState(String searchQuery) {
+        productRepository.debugDatabaseState(searchQuery);
+    }
+
+    // Force insert sample data for testing
+    public void forceInsertSampleData() {
+        executor.execute(() -> {
+            try {
+                android.util.Log.d("ProductViewModel", "Force inserting sample data...");
+                // This would need to be implemented with SampleDataManager
+                // For now, just log
+                android.util.Log.d("ProductViewModel", "Sample data insertion requested");
+            } catch (Exception e) {
+                android.util.Log.e("ProductViewModel", "Error force inserting sample data", e);
+            }
+        });
+    }
+
     @Override
     protected void onCleared() {
         super.onCleared();

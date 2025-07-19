@@ -71,13 +71,44 @@ public class ProductRepository {
     }
 
     public LiveData<List<Product>> searchProductsAdvanced(SearchFilter.FilterState filterState) {
-        return productDao.searchProductsAdvanced(
-                filterState.getSearchQuery(),
-                filterState.getCategoryIdsList().isEmpty() ? null : filterState.getCategoryIdsList(),
-                filterState.getPriceRange().getMinPrice(),
-                filterState.getPriceRange().getMaxPrice(),
-                filterState.isInStockOnly(),
-                filterState.getSortOption().getValue());
+        try {
+            List<Integer> categoryIds = filterState.getCategoryIdsList();
+            android.util.Log.d("ProductRepository", "Search params - Query: '" +
+                    filterState.getSearchQuery() + "', Categories: " +
+                    (categoryIds.isEmpty() ? "null" : categoryIds.toString()) +
+                    ", Price: " + filterState.getPriceRange().getMinPrice() +
+                    " - " + filterState.getPriceRange().getMaxPrice() +
+                    ", InStock: " + filterState.isInStockOnly() +
+                    ", Sort: " + filterState.getSortOption().getValue());
+
+            // Debug: Test simple search first
+            if (!filterState.getSearchQuery().isEmpty()) {
+                android.util.Log.d("ProductRepository", "Testing simple search for: " + filterState.getSearchQuery());
+                LiveData<List<Product>> simpleResult = productDao.searchProducts(filterState.getSearchQuery());
+                // Log this result in observer
+            }
+
+            // Try workaround for BigDecimal issues
+            BigDecimal minPrice = filterState.getPriceRange().getMinPrice();
+            BigDecimal maxPrice = filterState.getPriceRange().getMaxPrice();
+
+            // Debug price values
+            android.util.Log.d("ProductRepository", "Price values - Min: " + minPrice +
+                    " (type: " + minPrice.getClass().getSimpleName() + "), Max: " + maxPrice +
+                    " (type: " + maxPrice.getClass().getSimpleName() + ")");
+
+            return productDao.searchProductsAdvanced(
+                    filterState.getSearchQuery(),
+                    categoryIds.isEmpty() ? null : categoryIds,
+                    minPrice,
+                    maxPrice,
+                    filterState.isInStockOnly(),
+                    filterState.getSortOption().getValue());
+        } catch (Exception e) {
+            android.util.Log.e("ProductRepository", "Error in searchProductsAdvanced", e);
+            // Return empty LiveData instead of crashing
+            return new androidx.lifecycle.MutableLiveData<>(new java.util.ArrayList<>());
+        }
     }
 
     public LiveData<BigDecimal> getMinPrice() {
@@ -112,5 +143,57 @@ public class ProductRepository {
 
     public void deleteProduct(Product product) {
         executor.execute(() -> productDao.deleteProduct(product));
+    }
+
+    // Debug methods
+    public void debugDatabaseState(String searchQuery) {
+        executor.execute(() -> {
+            try {
+                int totalProducts = productDao.getTotalProductCount();
+                int activeProducts = productDao.getActiveProductCount();
+                android.util.Log.d("ProductRepository",
+                        "Database state - Total: " + totalProducts + ", Active: " + activeProducts);
+
+                if (!searchQuery.isEmpty()) {
+                    List<Product> debugResults = productDao.debugSearchSync(searchQuery);
+                    android.util.Log.d("ProductRepository",
+                            "Debug search for '" + searchQuery + "' returned " + debugResults.size() + " products:");
+                    for (Product p : debugResults) {
+                        android.util.Log.d("ProductRepository",
+                                "  - " + p.getName() + " (ID: " + p.getId() + ", Active: " + p.isActive() + ")");
+                    }
+
+                    // Test advanced search query without price constraints
+                    List<Product> advancedDebugResults = productDao.debugAdvancedSearchSimpleSync(searchQuery);
+                    android.util.Log.d("ProductRepository", "Advanced debug search for '" + searchQuery + "' returned "
+                            + advancedDebugResults.size() + " products:");
+                    for (Product p : advancedDebugResults) {
+                        android.util.Log.d("ProductRepository",
+                                "  ADV - " + p.getName() + " (ID: " + p.getId() + ", Price: " + p.getPrice() + ")");
+                    }
+
+                    // Test advanced search WITH hardcoded price range
+                    List<Product> advancedWithPriceResults = productDao.debugAdvancedSearchWithPriceSync(searchQuery);
+                    android.util.Log.d("ProductRepository", "Advanced+Price debug search for '" + searchQuery
+                            + "' returned " + advancedWithPriceResults.size() + " products:");
+                    for (Product p : advancedWithPriceResults) {
+                        android.util.Log.d("ProductRepository",
+                                "  PRICE - " + p.getName() + " (ID: " + p.getId() + ", Price: " + p.getPrice() + ")");
+                    }
+                }
+
+                // Test with all products
+                List<Product> allProducts = productDao.getAllActiveProductsSync();
+                android.util.Log.d("ProductRepository", "All active products (" + allProducts.size() + "):");
+                for (Product p : allProducts) {
+                    if (p.getName().toLowerCase().contains(searchQuery.toLowerCase())) {
+                        android.util.Log.d("ProductRepository", "  MATCH: " + p.getName() + " (ID: " + p.getId() +
+                                ", Price: " + p.getPrice() + ", Stock: " + p.getStockQuantity() + ")");
+                    }
+                }
+            } catch (Exception e) {
+                android.util.Log.e("ProductRepository", "Error in debugDatabaseState", e);
+            }
+        });
     }
 }

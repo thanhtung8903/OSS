@@ -46,6 +46,7 @@
 
         <!-- Products Section -->
         <TextView
+            android:id="@+id/tv_products_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Sản phẩm nổi bật"
