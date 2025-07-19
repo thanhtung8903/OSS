@@ -33,8 +33,7 @@ public class AdminFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
-
+    private String mParam2;    
     private MaterialCardView cardManageCategories;
     private MaterialCardView cardManageOrders;
     private MaterialCardView cardManageUsers;
@@ -80,24 +79,25 @@ public class AdminFragment extends Fragment {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admin, container, false);
 
-        // Initialize views
         btnBackAdmin = view.findViewById(R.id.btn_back_admin);
         btnBackAdmin.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+
         cardManageCategories = view.findViewById(R.id.card_manage_categories);
         cardManageOrders = view.findViewById(R.id.card_manage_orders);
         cardManageUsers = view.findViewById(R.id.card_manage_users);
         cardManageProducts = view.findViewById(R.id.card_manage_products);
+
+
         cardStatistics = view.findViewById(R.id.card_statistics);
         tvAdminStats = view.findViewById(R.id.tv_admin_stats);
+
 
         // Setup click listeners
         setupClickListeners();
         // Không load thống kê tổng quan ở header nữa
         // loadStatistics();
         return view;
-    }
-
-    private void setupClickListeners() {
+    }    private void setupClickListeners() {
         cardManageCategories.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CategoryManagementActivity.class);
             startActivity(intent);
@@ -114,6 +114,7 @@ public class AdminFragment extends Fragment {
             Intent intent = new Intent(getActivity(), UserManagementActivity.class);
             startActivity(intent);
         });
+
         cardManageProducts.setOnClickListener(v -> {
             AdminProductManagementFragment fragment = new AdminProductManagementFragment();
             requireActivity().getSupportFragmentManager()
@@ -136,5 +137,6 @@ public class AdminFragment extends Fragment {
         // TODO: Kết nối ViewModel thực tế để lấy số lượng user, sản phẩm, đơn hàng
         // Hiện tại demo số liệu giả lập
         tvAdminStats.setText("Tổng quan: 100 người dùng, 50 sản phẩm, 200 đơn hàng");
+
     }
 }
