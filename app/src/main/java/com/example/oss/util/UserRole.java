@@ -12,14 +12,17 @@ public enum UserRole {
 
     public String getValue() {
         return value;
-    }
-
-    public static UserRole fromString(String role) {
+    }    public static UserRole fromString(String role) {
+        android.util.Log.d("UserRole", "fromString called with: '" + role + "'");
         for (UserRole userRole : UserRole.values()) {
-            if (userRole.value.equals(role)) {
+            android.util.Log.d("UserRole", "Comparing with value: '" + userRole.value + "' and name: '" + userRole.name() + "'");
+            // Support both value ("Admin", "Customer") and enum name ("ADMIN", "CUSTOMER")
+            if (userRole.value.equals(role) || userRole.name().equals(role)) {
+                android.util.Log.d("UserRole", "Match found: " + userRole);
                 return userRole;
             }
         }
+        android.util.Log.d("UserRole", "No match found, returning CUSTOMER");
         return CUSTOMER; // Default
     }
 

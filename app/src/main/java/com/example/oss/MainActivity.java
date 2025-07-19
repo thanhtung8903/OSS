@@ -26,14 +26,11 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private AuthViewModel authViewModel;
-    private SampleDataManager sampleDataManager;
-
-    @Override
+    private SampleDataManager sampleDataManager;    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Intent intent = new Intent(this, UserManagementActivity.class);
-        startActivity(intent);
+        
         // Initialize SampleDataManager và load sample data
         initializeSampleData();
         // Initialize ViewModel
@@ -47,9 +44,9 @@ public class MainActivity extends AppCompatActivity {
         setupBottomNavigation();
         setupObservers();
 
-        // Load default fragment nếu không phải admin
+        // Load default fragment based on user role
         if (savedInstanceState == null) {
-            loadFragment(new HomeFragment());
+            loadInitialFragment();
         }
     }
 
@@ -87,39 +84,42 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
-    }
-
-    private void setupObservers() {
+    }    private void setupObservers() {
         // Observe authentication state
         authViewModel.getIsLoggedIn().observe(this, isLoggedIn -> {
             // Update UI based on login state
             // Can show/hide certain menu items or features
-        });
-
-        // Observe current user
+            if (isLoggedIn != null && isLoggedIn) {
+                // User is logged in, reload initial fragment based on role
+                loadInitialFragment();
+            }
+        });        // Observe current user - chỉ để debug, không dùng để redirect
         authViewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
-                // Update UI with user info
-                // Show admin features if user is admin
-                updateUIForUser(user);
+                // Update UI with user info - không redirect ở đây để tránh conflict
+                // Log thông tin user để debug
+                android.util.Log.d("MainActivity", "Current user: " + user.getFullName() + " - Role: " + user.getRole());
             }
         });
-    }
-
-    private void updateUIForUser(SessionManager.SessionUser user) {
+    }private void updateUIForUser(SessionManager.SessionUser user) {
         // Update bottom navigation or show admin options
         if (user.getRole() == UserRole.ADMIN) {
             // Show admin-specific UI
             // Admin có thể reset sample data nếu cần
+            // Có thể thêm menu item admin hoặc chuyển đến AdminFragment
+            loadFragment(new AdminFragment());
+        } else {
+            // Customer - hiển thị HomeFragment
+            loadFragment(new HomeFragment());
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
         }
-    }
-
-    /**
+    }    /**
      * Method để force reset sample data (dành cho admin hoặc testing)
      */
     public void resetSampleData() {
         if (sampleDataManager != null) {
-            sampleDataManager.forceInsertSampleData();
+            sampleDataManager.resetSampleData(); // Reset flag first
+            sampleDataManager.forceInsertSampleData(); // Then force insert new data
         }
     }
 
@@ -141,5 +141,40 @@ public class MainActivity extends AppCompatActivity {
         sampleDataManager = new SampleDataManager(this);
         // Chạy async để không block UI
         sampleDataManager.initializeSampleData();
+    }    // Method để load fragment ban đầu dựa trên role
+    private void loadInitialFragment() {
+        SessionManager sessionManager = SessionManager.getInstance(this);
+        
+        // Debug log
+        android.util.Log.d("MainActivity", "loadInitialFragment - isLoggedIn: " + sessionManager.isLoggedIn());
+        
+        if (sessionManager.isLoggedIn()) {
+            SessionManager.SessionUser currentUser = sessionManager.getCurrentUser();
+            if (currentUser != null) {
+                android.util.Log.d("MainActivity", "Current user: " + currentUser.getFullName() + " - Role: " + currentUser.getRole() + " - Email: " + currentUser.getEmail());
+                
+                if (currentUser.getRole() == UserRole.ADMIN) {
+                    // Nếu là admin, load AdminFragment
+                    android.util.Log.d("MainActivity", "Loading AdminFragment for admin user");
+                    loadFragment(new AdminFragment());
+                    // Highlight admin option nếu có trong bottom navigation
+                    // bottomNavigationView.setSelectedItemId(R.id.nav_admin); // nếu có admin tab
+                } else {
+                    // Nếu là customer hoặc chưa đăng nhập, load HomeFragment
+                    android.util.Log.d("MainActivity", "Loading HomeFragment for customer user");
+                    loadFragment(new HomeFragment());
+                    bottomNavigationView.setSelectedItemId(R.id.nav_home);
+                }
+            } else {
+                android.util.Log.d("MainActivity", "Current user is null, loading HomeFragment");
+                loadFragment(new HomeFragment());
+                bottomNavigationView.setSelectedItemId(R.id.nav_home);
+            }
+        } else {
+            // Chưa đăng nhập, load HomeFragment mặc định
+            android.util.Log.d("MainActivity", "Not logged in, loading HomeFragment");
+            loadFragment(new HomeFragment());
+            bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        }
     }
 }

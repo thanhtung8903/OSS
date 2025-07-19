@@ -29,10 +29,9 @@ public class AdminFragment extends Fragment {
 
     // TODO: Rename and change types of parameters
     private String mParam1;
-    private String mParam2;
-
-    private MaterialCardView cardManageCategories;
+    private String mParam2;    private MaterialCardView cardManageCategories;
     private MaterialCardView cardManageUsers;
+    private MaterialCardView cardManageProducts;
 
     public AdminFragment() {
         // Required empty public constructor
@@ -70,18 +69,16 @@ public class AdminFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View view = inflater.inflate(R.layout.fragment_admin, container, false);
-        
-        // Initialize views
+          // Initialize views
         cardManageCategories = view.findViewById(R.id.card_manage_categories);
         cardManageUsers = view.findViewById(R.id.card_manage_users);
+        cardManageProducts = view.findViewById(R.id.card_manage_products);
         
         // Setup click listeners
         setupClickListeners();
         
         return view;
-    }
-
-    private void setupClickListeners() {
+    }    private void setupClickListeners() {
         cardManageCategories.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), CategoryManagementActivity.class);
             startActivity(intent);
@@ -90,6 +87,17 @@ public class AdminFragment extends Fragment {
         cardManageUsers.setOnClickListener(v -> {
             Intent intent = new Intent(getActivity(), UserManagementActivity.class);
             startActivity(intent);
+        });
+
+        cardManageProducts.setOnClickListener(v -> {
+            // Navigate to AdminProductManagementFragment
+            if (getActivity() != null) {
+                getActivity().getSupportFragmentManager()
+                        .beginTransaction()
+                        .replace(R.id.fragment_container, new AdminProductManagementFragment())
+                        .addToBackStack(null)
+                        .commit();
+            }
         });
     }
 }
