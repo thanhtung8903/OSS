@@ -3,6 +3,7 @@ package com.example.oss.activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.MenuItem;
+import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -16,6 +17,7 @@ import com.example.oss.viewmodel.ProductViewModel;
 import com.example.oss.viewmodel.CartViewModel;
 import com.example.oss.viewmodel.WishlistViewModel;
 import com.example.oss.viewmodel.ReviewViewModel;
+import com.example.oss.repository.UserRepository;
 import com.google.android.material.button.MaterialButton;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -23,8 +25,10 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.widget.LinearLayout;
 import com.example.oss.adapter.ReviewAdapter;
 import com.example.oss.entity.Review;
+import com.example.oss.entity.User;
 import com.example.oss.dialog.WriteReviewDialog;
 import com.example.oss.repository.UserRepository;
+import com.example.oss.util.SampleDataManager;
 import java.text.NumberFormat;
 import java.util.Locale;
 import java.util.List;
@@ -38,6 +42,7 @@ public class ProductDetailActivity extends AppCompatActivity {
     private CartViewModel cartViewModel;
     private WishlistViewModel wishlistViewModel;
     private ReviewViewModel reviewViewModel;
+    private UserRepository userRepository;
     private SessionManager sessionManager;
 
     // Views
@@ -118,12 +123,17 @@ public class ProductDetailActivity extends AppCompatActivity {
         cartViewModel = new ViewModelProvider(this).get(CartViewModel.class);
         wishlistViewModel = new ViewModelProvider(this).get(WishlistViewModel.class);
         reviewViewModel = new ViewModelProvider(this).get(ReviewViewModel.class);
+        userRepository = new UserRepository(getApplication());
         sessionManager = SessionManager.getInstance(this);
     }
 
     private void setupReviewsRecyclerView() {
         LinearLayoutManager layoutManager = new LinearLayoutManager(this);
         rvReviews.setLayoutManager(layoutManager);
+
+        // Fix nested scrolling issue
+        rvReviews.setNestedScrollingEnabled(false);
+        rvReviews.setHasFixedSize(false);
 
         reviewAdapter = new ReviewAdapter(reviews, userNames, new ReviewAdapter.OnReviewActionListener() {
             @Override
@@ -140,6 +150,8 @@ public class ProductDetailActivity extends AppCompatActivity {
         }, sessionManager);
 
         rvReviews.setAdapter(reviewAdapter);
+
+        android.util.Log.d("ProductDetail", "setupReviewsRecyclerView completed");
     }
 
     private void setupToolbar() {
@@ -190,13 +202,35 @@ public class ProductDetailActivity extends AppCompatActivity {
         // Observe reviews for this product
         reviewViewModel.getReviewsByProduct(productId).observe(this, reviewsList -> {
             if (reviewsList != null) {
+                android.util.Log.d("ProductDetail",
+                        "Loaded " + reviewsList.size() + " reviews for product " + productId);
+
+                // Clear and update reviews list
                 reviews.clear();
                 reviews.addAll(reviewsList);
-                reviewAdapter.updateReviews(reviews);
+
+                // Update UI state first
                 updateReviewsUI(reviewsList);
 
-                // Load user names for reviews
-                loadUserNamesForReviews(reviewsList);
+                if (!reviewsList.isEmpty()) {
+                    // Load user names first, then update adapter
+                    loadUserNamesForReviews(reviewsList);
+
+                    // Fallback: Show reviews immediately with default user names after 2 seconds
+                    new android.os.Handler().postDelayed(() -> {
+                        if (userNames.size() != reviewsList.size() && reviewAdapter.getItemCount() == 0) {
+                            android.util.Log.w("ProductDetail",
+                                    "Fallback: User names not loaded completely and adapter is empty, using defaults");
+                            showReviewsWithFallbackUserNames(reviewsList);
+                        } else {
+                            android.util.Log.d("ProductDetail",
+                                    "Fallback not needed - adapter has " + reviewAdapter.getItemCount() + " items");
+                        }
+                    }, 2000);
+                } else {
+                    // No reviews, just update adapter
+                    reviewAdapter.updateReviews(reviews);
+                }
             }
         });
 
@@ -258,6 +292,22 @@ public class ProductDetailActivity extends AppCompatActivity {
         btnAddToCart.setOnClickListener(v -> addToCart());
         fabWishlist.setOnClickListener(v -> toggleWishlist());
         btnWriteReview.setOnClickListener(v -> showWriteReviewDialog());
+
+        // Debug: Long click on product name to recreate sample data
+        tvProductName.setOnLongClickListener(v -> {
+            recreateSampleDataForDebug();
+            return true;
+        });
+
+        // Debug: Click on rating summary to force refresh real reviews data
+        layoutRatingSummary.setOnClickListener(v -> {
+            forceRefreshReviews();
+        });
+
+        // Debug: Double tap on RecyclerView to test with simple data
+        rvReviews.setOnClickListener(v -> {
+            testWithSimpleData();
+        });
     }
 
     private void displayProductInfo(Product product) {
@@ -363,14 +413,46 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void updateReviewsUI(List<Review> reviewsList) {
+        android.util.Log.d("ProductDetail", "updateReviewsUI: " + reviewsList.size() + " reviews");
+
         if (reviewsList.isEmpty()) {
             layoutNoReviews.setVisibility(LinearLayout.VISIBLE);
             layoutRatingSummary.setVisibility(LinearLayout.GONE);
             rvReviews.setVisibility(RecyclerView.GONE);
+            android.util.Log.d("ProductDetail", "Showing no reviews layout");
         } else {
             layoutNoReviews.setVisibility(LinearLayout.GONE);
             layoutRatingSummary.setVisibility(LinearLayout.VISIBLE);
             rvReviews.setVisibility(RecyclerView.VISIBLE);
+            android.util.Log.d("ProductDetail", "Showing reviews: rating summary + recycler view");
+
+            // Force RecyclerView to measure properly
+            setRecyclerViewHeight(rvReviews, reviewsList.size());
+
+            // Debug: Log each review
+            for (int i = 0; i < reviewsList.size(); i++) {
+                Review review = reviewsList.get(i);
+                android.util.Log.d("ProductDetail", "Review " + i + ": " +
+                        "rating=" + review.getRating() + ", " +
+                        "comment='" + review.getComment() + "', " +
+                        "userId=" + review.getUserId() + ", " +
+                        "date=" + review.getCreatedAt());
+            }
+        }
+    }
+
+    private void setRecyclerViewHeight(RecyclerView recyclerView, int itemCount) {
+        if (itemCount > 0) {
+            // Estimate height per item (you may need to adjust this)
+            int estimatedItemHeight = (int) (120 * getResources().getDisplayMetrics().density); // ~120dp
+            int totalHeight = estimatedItemHeight * itemCount;
+
+            ViewGroup.LayoutParams params = recyclerView.getLayoutParams();
+            params.height = totalHeight;
+            recyclerView.setLayoutParams(params);
+
+            android.util.Log.d("ProductDetail",
+                    "Set RecyclerView height to: " + totalHeight + " for " + itemCount + " items");
         }
     }
 
@@ -406,13 +488,163 @@ public class ProductDetailActivity extends AppCompatActivity {
     }
 
     private void loadUserNamesForReviews(List<Review> reviewsList) {
-        // For now, we'll use placeholder names since we don't have a direct user query
-        // In a real app, you'd query user details from UserRepository
         userNames.clear();
+
+        android.util.Log.d("ProductDetail", "Loading user names for " + reviewsList.size() + " reviews");
+
+        // Load real user names from database
+        new Thread(() -> {
+            for (Review review : reviewsList) {
+                try {
+                    User user = userRepository.getUserByIdSync(review.getUserId());
+                    if (user != null) {
+                        userNames.add(user.getFullName());
+                        android.util.Log.d("ProductDetail",
+                                "Loaded user name: " + user.getFullName() + " for userId: " + review.getUserId());
+                    } else {
+                        userNames.add("Người dùng " + review.getUserId());
+                        android.util.Log.d("ProductDetail", "No user found for userId: " + review.getUserId());
+                    }
+                } catch (Exception e) {
+                    userNames.add("Người dùng " + review.getUserId());
+                    android.util.Log.e("ProductDetail", "Error loading user for userId: " + review.getUserId(), e);
+                }
+            }
+
+            // Update UI on main thread
+            runOnUiThread(() -> {
+                android.util.Log.d("ProductDetail",
+                        "Updating adapter with " + reviews.size() + " reviews and " + userNames.size() + " user names");
+
+                // Update adapter with both reviews and user names (create new lists to avoid
+                // reference issues)
+                List<Review> reviewsCopy = new ArrayList<>(reviews);
+                List<String> userNamesCopy = new ArrayList<>(userNames);
+
+                android.util.Log.d("ProductDetail",
+                        "Creating copies - reviews: " + reviewsCopy.size() + ", userNames: " + userNamesCopy.size());
+                reviewAdapter.updateReviewsAndUserNames(reviewsCopy, userNamesCopy);
+
+                // Force RecyclerView refresh
+                rvReviews.post(() -> {
+                    android.util.Log.d("ProductDetail",
+                            "Final RecyclerView adapter itemCount: " + reviewAdapter.getItemCount());
+                    android.util.Log.d("ProductDetail", "Final RecyclerView visibility: " + rvReviews.getVisibility());
+                    android.util.Log.d("ProductDetail", "Final RecyclerView height: " + rvReviews.getHeight());
+
+                    reviewAdapter.notifyDataSetChanged();
+                    rvReviews.requestLayout();
+                    rvReviews.invalidate();
+                });
+            });
+        }).start();
+    }
+
+    // Debug method to recreate sample data
+    private void recreateSampleDataForDebug() {
+        Toast.makeText(this, "Đang recreate sample data... Check logs", Toast.LENGTH_LONG).show();
+
+        SampleDataManager sampleDataManager = new SampleDataManager(this);
+        sampleDataManager.recreateSampleData();
+
+        // Refresh current product data after a delay
+        new android.os.Handler().postDelayed(() -> {
+            if (productViewModel != null) {
+                productViewModel.getProductById(productId).observe(this, product -> {
+                    if (product != null) {
+                        displayProductInfo(product);
+                    }
+                });
+
+                // Refresh reviews
+                reviewViewModel.getReviewsByProduct(productId);
+            }
+            Toast.makeText(this, "Sample data recreated! Reviews should now display.", Toast.LENGTH_LONG).show();
+        }, 3000);
+    }
+
+    // Method to force refresh real reviews data
+    private void forceRefreshReviews() {
+        android.util.Log.d("ProductDetail", "Force refreshing real reviews data");
+        Toast.makeText(this, "Refreshing reviews...", Toast.LENGTH_SHORT).show();
+
+        // Clear current data
+        reviews.clear();
+        userNames.clear();
+        reviewAdapter.updateReviews(new ArrayList<>());
+
+        // Remove all observers to avoid conflicts
+        reviewViewModel.getReviewsByProduct(productId).removeObservers(this);
+        reviewViewModel.getAverageRatingForProduct(productId).removeObservers(this);
+        reviewViewModel.getReviewCountForProduct(productId).removeObservers(this);
+
+        // Wait a moment then re-setup observer
+        new android.os.Handler().postDelayed(() -> {
+            setupReviewObservers();
+        }, 100);
+
+        android.util.Log.d("ProductDetail", "Reviews refresh initiated");
+    }
+
+    // Fallback method to show reviews with default user names
+    private void showReviewsWithFallbackUserNames(List<Review> reviewsList) {
+        android.util.Log.d("ProductDetail", "Using fallback user names for " + reviewsList.size() + " reviews");
+
+        // Create fallback user names
+        List<String> fallbackUserNames = new ArrayList<>();
         for (Review review : reviewsList) {
-            userNames.add("Người dùng " + review.getUserId());
+            fallbackUserNames.add("Người dùng " + review.getUserId());
         }
-        reviewAdapter.updateUserNames(userNames);
+
+        // Update adapter with fallback names (create copies to avoid reference issues)
+        List<Review> reviewsCopy = new ArrayList<>(reviews);
+        List<String> fallbackUserNamesCopy = new ArrayList<>(fallbackUserNames);
+
+        android.util.Log.d("ProductDetail",
+                "Fallback copies - reviews: " + reviewsCopy.size() + ", userNames: " + fallbackUserNamesCopy.size());
+        reviewAdapter.updateReviewsAndUserNames(reviewsCopy, fallbackUserNamesCopy);
+
+        // Force RecyclerView refresh
+        rvReviews.post(() -> {
+            android.util.Log.d("ProductDetail", "Fallback RecyclerView refresh completed");
+            reviewAdapter.notifyDataSetChanged();
+            rvReviews.requestLayout();
+            rvReviews.invalidate();
+        });
+
+        Toast.makeText(this, "Hiển thị " + reviewsList.size() + " đánh giá", Toast.LENGTH_SHORT).show();
+    }
+
+    // Simple test method with hardcoded data
+    private void testWithSimpleData() {
+        android.util.Log.d("ProductDetail", "Testing with simple hardcoded data");
+
+        // Create simple test data
+        List<Review> testReviews = new ArrayList<>();
+        testReviews.add(new Review(1, productId, 5, "Test comment 1"));
+        testReviews.add(new Review(2, productId, 4, "Test comment 2"));
+
+        List<String> testUserNames = new ArrayList<>();
+        testUserNames.add("Test User 1");
+        testUserNames.add("Test User 2");
+
+        // Force show
+        layoutNoReviews.setVisibility(LinearLayout.GONE);
+        layoutRatingSummary.setVisibility(LinearLayout.VISIBLE);
+        rvReviews.setVisibility(RecyclerView.VISIBLE);
+        setRecyclerViewHeight(rvReviews, testReviews.size());
+
+        // Update adapter
+        reviewAdapter.updateReviewsAndUserNames(testReviews, testUserNames);
+
+        // Force layout
+        rvReviews.post(() -> {
+            android.util.Log.d("ProductDetail", "Test data - adapter itemCount: " + reviewAdapter.getItemCount());
+            reviewAdapter.notifyDataSetChanged();
+            rvReviews.requestLayout();
+        });
+
+        Toast.makeText(this, "Loaded test data", Toast.LENGTH_SHORT).show();
     }
 
     @Override

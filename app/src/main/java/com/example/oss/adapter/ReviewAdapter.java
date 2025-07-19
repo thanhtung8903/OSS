@@ -44,6 +44,7 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
     @NonNull
     @Override
     public ReviewViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+        android.util.Log.d("ReviewAdapter", "onCreateViewHolder called");
         View view = LayoutInflater.from(parent.getContext())
                 .inflate(R.layout.item_review, parent, false);
         return new ReviewViewHolder(view);
@@ -57,12 +58,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
 
     @Override
     public int getItemCount() {
+        android.util.Log.d("ReviewAdapter", "getItemCount called, returning: " + reviews.size());
         return reviews.size();
     }
 
     public void updateReviews(List<Review> newReviews) {
+        android.util.Log.d("ReviewAdapter", "updateReviews called with " + newReviews.size() + " reviews");
         this.reviews.clear();
         this.reviews.addAll(newReviews);
+        android.util.Log.d("ReviewAdapter", "reviews.size after update: " + reviews.size());
         notifyDataSetChanged();
     }
 
@@ -70,6 +74,28 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         this.userNames.clear();
         this.userNames.addAll(newUserNames);
         notifyDataSetChanged();
+    }
+
+    public void updateReviewsAndUserNames(List<Review> newReviews, List<String> newUserNames) {
+        android.util.Log.d("ReviewAdapter", "updateReviewsAndUserNames called with " +
+                (newReviews != null ? newReviews.size() : "null") + " reviews and " +
+                (newUserNames != null ? newUserNames.size() : "null") + " user names");
+
+        if (newReviews != null) {
+            this.reviews.clear();
+            this.reviews.addAll(newReviews);
+            android.util.Log.d("ReviewAdapter", "Reviews updated, new size: " + this.reviews.size());
+        }
+
+        if (newUserNames != null) {
+            this.userNames.clear();
+            this.userNames.addAll(newUserNames);
+            android.util.Log.d("ReviewAdapter", "User names updated, new size: " + this.userNames.size());
+        }
+
+        android.util.Log.d("ReviewAdapter", "About to call notifyDataSetChanged()");
+        notifyDataSetChanged();
+        android.util.Log.d("ReviewAdapter", "notifyDataSetChanged() completed");
     }
 
     class ReviewViewHolder extends RecyclerView.ViewHolder {
@@ -99,8 +125,13 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
         }
 
         public void bind(Review review, int position) {
+            // Debug log
+            android.util.Log.d("ReviewAdapter", "Binding review " + position +
+                    ": rating=" + review.getRating() + ", comment=" + review.getComment() +
+                    ", userNames.size=" + userNames.size());
+
             // Set user name
-            if (position < userNames.size()) {
+            if (position < userNames.size() && !userNames.get(position).isEmpty()) {
                 tvReviewerName.setText(userNames.get(position));
             } else {
                 tvReviewerName.setText("Người dùng " + review.getUserId());
@@ -116,7 +147,15 @@ public class ReviewAdapter extends RecyclerView.Adapter<ReviewAdapter.ReviewView
             setStarRating(review.getRating());
 
             // Set comment
-            tvReviewComment.setText(review.getComment());
+            String comment = review.getComment();
+            if (comment != null && !comment.trim().isEmpty()) {
+                tvReviewComment.setText(comment);
+                tvReviewComment.setVisibility(View.VISIBLE);
+            } else {
+                tvReviewComment.setText("Người dùng chưa để lại bình luận");
+                tvReviewComment.setVisibility(View.VISIBLE);
+                tvReviewComment.setTextColor(0xFF888888); // Gray color for placeholder
+            }
 
             // Show/hide action buttons if this is current user's review
             boolean isCurrentUserReview = false;

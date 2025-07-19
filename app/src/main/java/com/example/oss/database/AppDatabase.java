@@ -25,7 +25,6 @@ import com.example.oss.util.Converters;
 public abstract class AppDatabase extends RoomDatabase {
     private static volatile AppDatabase INSTANCE;
 
-    // Abstract methods cho các DAO
     public abstract CategoryDao categoryDao();
 
     public abstract UserDao userDao();

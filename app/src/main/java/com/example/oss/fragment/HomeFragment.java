@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 import android.widget.Toast;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -33,6 +34,7 @@ public class HomeFragment extends BaseFragment {
     private ProductViewModel productViewModel;
     private RecyclerView rvCategories, rvProducts;
     private TextInputEditText etSearch;
+    private TextView tvProductsTitle;
 
     // Adapters
     private CategoryAdapter categoryAdapter;
@@ -40,6 +42,9 @@ public class HomeFragment extends BaseFragment {
 
     private CartViewModel cartViewModel;
     private WishlistViewModel wishlistViewModel;
+
+    // Current filter state
+    private int currentCategoryFilter = -1; // -1 means show all
 
     @Nullable
     @Override
@@ -68,6 +73,7 @@ public class HomeFragment extends BaseFragment {
         etSearch = view.findViewById(R.id.et_search);
         rvCategories = view.findViewById(R.id.rv_categories);
         rvProducts = view.findViewById(R.id.rv_products);
+        tvProductsTitle = view.findViewById(R.id.tv_products_title);
 
         // Setup RecyclerViews
         setupCategoriesRecyclerView();
@@ -85,6 +91,7 @@ public class HomeFragment extends BaseFragment {
 
         // Initialize adapter
         categoryAdapter = new CategoryAdapter(new ArrayList<>(), this::onCategoryClick);
+        categoryAdapter.setOnShowAllClickListener(this::onShowAllClick);
         rvCategories.setAdapter(categoryAdapter);
     }
 
@@ -187,9 +194,60 @@ public class HomeFragment extends BaseFragment {
         // Data will be loaded automatically through observers
     }
 
+    private void loadProductsByCategory(int categoryId) {
+        currentCategoryFilter = categoryId;
+        // Observe products by category
+        productViewModel.getProductsByCategory(categoryId).observe(getViewLifecycleOwner(), products -> {
+            if (products != null) {
+                productAdapter.updateProducts(products);
+
+                String message = products.isEmpty() ? "Không có sản phẩm nào trong danh mục này"
+                        : "Hiển thị " + products.size() + " sản phẩm";
+                Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void loadAllProducts() {
+        currentCategoryFilter = -1; // Reset filter
+        categoryAdapter.clearSelection(); // Clear category selection
+
+        // Load all products (reset filter)
+        productViewModel.getAllProducts().observe(getViewLifecycleOwner(), products -> {
+            if (products != null) {
+                productAdapter.updateProducts(products);
+                Toast.makeText(getContext(), "Hiển thị tất cả sản phẩm", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
     private void onCategoryClick(Category category) {
-        Toast.makeText(getContext(), "Danh mục: " + category.getName(), Toast.LENGTH_SHORT).show();
-        // TODO: Filter products by category
+        Toast.makeText(getContext(), "Hiển thị sản phẩm danh mục: " + category.getName(), Toast.LENGTH_SHORT).show();
+
+        // Filter products by category
+        loadProductsByCategory(category.getId());
+
+        // Update category selection state
+        categoryAdapter.setSelectedCategory(category.getId());
+
+        // Update products title
+        updateProductsTitle("Sản phẩm " + category.getName());
+    }
+
+    private void onShowAllClick() {
+        Toast.makeText(getContext(), "Hiển thị tất cả sản phẩm", Toast.LENGTH_SHORT).show();
+
+        // Load all products
+        loadAllProducts();
+
+        // Update products title
+        updateProductsTitle("Sản phẩm nổi bật");
+    }
+
+    private void updateProductsTitle(String title) {
+        if (tvProductsTitle != null) {
+            tvProductsTitle.setText(title);
+        }
     }
 
     private void onProductClick(Product product) {

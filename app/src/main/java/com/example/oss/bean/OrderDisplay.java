@@ -1,30 +1,52 @@
 package com.example.oss.bean;
 
+import com.example.oss.dao.OrderItemDao;
+import com.example.oss.entity.OrderItem;
+
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
+import java.util.List;
 
-public class OrderDisplay {
+public class OrderDisplay implements Serializable {
     public int orderId;
     public Date orderDate;
     public String orderStatus;
     public String customerName;
+    public String customerEmail;
+    public String customerPhone;
+    public List<OrderItemDao.OrderItemWithProduct> productList;
     public String productSummary; // Ví dụ: "Sản phẩm A (2), Sản phẩm B (1)"
     public BigDecimal totalAmount;
+
+    public List<OrderItemDao.OrderItemWithProduct> getProductList() {
+        return productList;
+    }
+
+    public void setProductList(List<OrderItemDao.OrderItemWithProduct> productList) {
+        this.productList = productList;
+    }
+
     public String paymentMethod;
     public int itemCount;
 
     public OrderDisplay() {
     }
 
-    public OrderDisplay(int orderId, Date orderDate, String orderStatus, String customerName, String productSummary, BigDecimal totalAmount, String paymentMethod, int itemCount) {
-        this.orderId = orderId;
-        this.orderDate = orderDate;
-        this.orderStatus = orderStatus;
-        this.customerName = customerName;
-        this.productSummary = productSummary;
-        this.totalAmount = totalAmount;
-        this.paymentMethod = paymentMethod;
-        this.itemCount = itemCount;
+    public String getCustomerEmail() {
+        return customerEmail;
+    }
+
+    public void setCustomerEmail(String customerEmail) {
+        this.customerEmail = customerEmail;
+    }
+
+    public String getCustomerPhone() {
+        return customerPhone;
+    }
+
+    public void setCustomerPhone(String customerPhone) {
+        this.customerPhone = customerPhone;
     }
 
     public int getOrderId() {
