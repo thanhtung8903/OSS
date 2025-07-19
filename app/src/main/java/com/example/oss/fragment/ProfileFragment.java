@@ -28,6 +28,7 @@ import com.example.oss.ui.profile.ChangePasswordActivity;
 import android.app.Activity;
 import android.app.AlertDialog;
 import com.example.oss.util.UserRole;
+import android.widget.LinearLayout;
 
 public class ProfileFragment extends BaseFragment {
 
@@ -39,6 +40,7 @@ public class ProfileFragment extends BaseFragment {
     private MaterialCardView cardPersonalInfo, cardOrders, cardAddresses, cardChangePassword, cardSettings;
     private static final int EDIT_PROFILE_REQUEST = 1001;
     private static final int CHANGE_PASSWORD_REQUEST = 1002;
+    private LinearLayout layoutAdminEntry;
 
     @Nullable
     @Override
@@ -59,6 +61,19 @@ public class ProfileFragment extends BaseFragment {
 
         // Observe authentication state changes
         observeAuthState();
+        layoutAdminEntry = view.findViewById(R.id.layout_admin_entry);
+        if (isAdmin()) {
+            layoutAdminEntry.setVisibility(View.VISIBLE);
+            layoutAdminEntry.setOnClickListener(v -> {
+                requireActivity().getSupportFragmentManager()
+                    .beginTransaction()
+                    .replace(R.id.fragment_container, new AdminFragment())
+                    .addToBackStack(null)
+                    .commit();
+            });
+        } else {
+            layoutAdminEntry.setVisibility(View.GONE);
+        }
     }
 
     @Override
@@ -154,16 +169,7 @@ public class ProfileFragment extends BaseFragment {
         cardSettings.setOnClickListener(v -> {
             // TODO: Navigate to settings
             Toast.makeText(getContext(), "Cài đặt", Toast.LENGTH_SHORT).show();
-            // Bắt đầu giao dịch Fragment
-            FragmentTransaction transaction = getFragmentManager().beginTransaction();
-
-            // Tạo instance mới của AdminProductManagementFragment
-            AdminProductManagementFragment fragment = new AdminProductManagementFragment();
-
-            // Thay thế fragment hiện tại bằng AdminProductManagementFragment
-            transaction.replace(R.id.fragment_container, fragment); // R.id.fragment_container là ID của container chứa các fragment
-            transaction.addToBackStack(null); // Để có thể quay lại fragment trước đó
-            transaction.commit(); // Thực thi giao dịch
+            // Không còn điều hướng sang trang quản lý sản phẩm
         });
     }
 

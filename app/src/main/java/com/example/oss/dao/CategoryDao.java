@@ -44,4 +44,7 @@ public interface CategoryDao {
 
     @Query("SELECT COUNT(*) FROM products WHERE category_id = :categoryId")
     int hasProducts(int categoryId);
+
+    @Query("SELECT COUNT(*) FROM categories")
+    int getCategoryCountSync();
 }

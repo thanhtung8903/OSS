@@ -6,6 +6,17 @@
     android:layout_height="match_parent"
     tools:context=".fragment.AdminFragment">
 
+    <ImageButton
+        android:id="@+id/btn_back_admin"
+        android:layout_width="40dp"
+        android:layout_height="40dp"
+        android:layout_gravity="start|top"
+        android:layout_margin="16dp"
+        android:background="@android:color/transparent"
+        android:src="@drawable/ic_arrow_back"
+        android:contentDescription="Quay lại"
+        android:padding="8dp" />
+
     <LinearLayout
         android:id="@+id/layout_not_admin"
         android:layout_width="match_parent"
@@ -164,7 +175,6 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
-                        android:layout_marginStart="4dp"
                         app:cardElevation="1dp"
                         app:cardCornerRadius="8dp"
                         android:clickable="true"
@@ -203,7 +213,6 @@
                         </LinearLayout>
 
                     </com.google.android.material.card.MaterialCardView>
-
                 </LinearLayout>
 
                 <!-- Row 2: Users & Categories -->

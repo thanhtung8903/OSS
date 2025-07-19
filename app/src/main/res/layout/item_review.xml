@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<com.google.android.material.card.MaterialCardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="16dp"
+    android:layout_marginVertical="4dp"
+    app:cardElevation="2dp"
+    app:cardCornerRadius="8dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <!-- Header: User info and rating -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:layout_marginBottom="8dp">
+
+            <!-- User Avatar Placeholder -->
+            <ImageView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_person"
+                android:background="@drawable/category_icon_background"
+                android:padding="8dp"
+                android:layout_marginEnd="12dp"
+                app:tint="@color/primary" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <!-- User Name -->
+                <TextView
+                    android:id="@+id/tv_reviewer_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="Tên người đánh giá"
+                    android:textStyle="bold"
+                    android:textSize="14sp"
+                    android:textColor="@color/on_surface" />
+
+                <!-- Review Date -->
+                <TextView
+                    android:id="@+id/tv_review_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:text="2 ngày trước"
+                    android:textSize="12sp"
+                    android:textColor="@color/on_surface_variant" />
+
+            </LinearLayout>
+
+            <!-- Edit/Delete buttons (only for user's own review) -->
+            <LinearLayout
+                android:id="@+id/layout_review_actions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <ImageButton
+                    android:id="@+id/btn_edit_review"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_edit"
+                    android:background="@drawable/ripple_effect"
+                    android:layout_marginEnd="4dp"
+                    app:tint="@color/on_surface_variant" />
+
+                <ImageButton
+                    android:id="@+id/btn_delete_review"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:src="@drawable/ic_delete"
+                    android:background="@drawable/ripple_effect"
+                    app:tint="@color/error" />
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <!-- Rating Stars -->
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginBottom="8dp">
+
+            <ImageView
+                android:id="@+id/star_1"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_favorite_border"
+                android:layout_marginEnd="2dp" />
+
+            <ImageView
+                android:id="@+id/star_2"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_favorite_border"
+                android:layout_marginEnd="2dp" />
+
+            <ImageView
+                android:id="@+id/star_3"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_favorite_border"
+                android:layout_marginEnd="2dp" />
+
+            <ImageView
+                android:id="@+id/star_4"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_favorite_border"
+                android:layout_marginEnd="2dp" />
+
+            <ImageView
+                android:id="@+id/star_5"
+                android:layout_width="16dp"
+                android:layout_height="16dp"
+                android:src="@drawable/ic_favorite_border" />
+
+            <!-- Rating number -->
+            <TextView
+                android:id="@+id/tv_rating_number"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="5.0"
+                android:textSize="12sp"
+                android:textStyle="bold"
+                android:textColor="@color/primary"
+                android:layout_marginStart="8dp" />
+
+        </LinearLayout>
+
+        <!-- Review Comment -->
+        <TextView
+            android:id="@+id/tv_review_comment"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Sản phẩm rất tốt, chất lượng tuyệt vời. Tôi rất hài lòng với việc mua hàng này."
+            android:textSize="14sp"
+            android:textColor="@color/on_surface"
+            android:lineSpacingMultiplier="1.2" />
+
+    </LinearLayout>
+
+</com.google.android.material.card.MaterialCardView> 

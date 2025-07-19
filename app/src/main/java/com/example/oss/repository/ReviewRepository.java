@@ -13,11 +13,12 @@ import java.util.concurrent.Future;
 
 public class ReviewRepository {
     private ReviewDao reviewDao;
+    private AppDatabase database;
     private LiveData<List<Review>> allReviews;
     private ExecutorService executor;
 
     public ReviewRepository(Application application) {
-        AppDatabase database = AppDatabase.getDatabase(application);
+        database = AppDatabase.getDatabase(application);
         reviewDao = database.reviewDao();
         allReviews = reviewDao.getAllReviews();
         executor = Executors.newFixedThreadPool(2);
@@ -96,9 +97,13 @@ public class ReviewRepository {
 
     public Future<Boolean> hasUserPurchasedProduct(int userId, int productId) {
         return executor.submit(() -> {
-            // TODO: Implement logic to check if user has purchased this product
-            // This would require checking OrderItem table
-            return true; // Placeholder - assume user has purchased
+            try {
+                // Check if user has any delivered orders containing this product
+                return database.orderItemDao().hasUserPurchasedProduct(userId, productId) > 0;
+            } catch (Exception e) {
+                // If there's an error querying, allow review (fallback)
+                return true;
+            }
         });
     }
 
