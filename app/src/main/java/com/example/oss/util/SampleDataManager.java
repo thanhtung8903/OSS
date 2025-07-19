@@ -94,26 +94,22 @@ public class SampleDataManager {
     }
 
     private void insertSampleUsers() {
-        UserDao userDao = database.userDao();
-
-        // 1. Admin user
+        UserDao userDao = database.userDao();        // 1. Admin user
         User admin = User.builder()
                 .email("admin@oss.com")
                 .password(SecurityUtils.hashPassword("admin123"))
                 .fullName("Admin OSS")
                 .phoneNumber("0123456789")
-                .role(UserRole.ADMIN.toString())
-                .status(UserStatus.ACTIVE.toString())
-                .build();
-
-        // 2. Sample customers
+                .role(UserRole.ADMIN.getValue())
+                .status(UserStatus.ACTIVE.getValue())
+                .build();        // 2. Sample customers
         User customer1 = User.builder()
                 .email("customer1@gmail.com")
                 .password(SecurityUtils.hashPassword("123456"))
                 .fullName("Nguyễn Văn An")
                 .phoneNumber("0987654321")
-                .role(UserRole.CUSTOMER.toString())
-                .status(UserStatus.ACTIVE.toString())
+                .role(UserRole.CUSTOMER.getValue())
+                .status(UserStatus.ACTIVE.getValue())
                 .build();
 
         User customer2 = User.builder()
@@ -121,8 +117,8 @@ public class SampleDataManager {
                 .password(SecurityUtils.hashPassword("123456"))
                 .fullName("Trần Thị Bình")
                 .phoneNumber("0976543210")
-                .role(UserRole.CUSTOMER.toString())
-                .status(UserStatus.ACTIVE.toString())
+                .role(UserRole.CUSTOMER.getValue())
+                .status(UserStatus.ACTIVE.getValue())
                 .build();
 
         User customer3 = User.builder()
@@ -130,8 +126,8 @@ public class SampleDataManager {
                 .password(SecurityUtils.hashPassword("thanhtung"))
                 .fullName("Test User")
                 .phoneNumber("0965432109")
-                .role(UserRole.CUSTOMER.toString())
-                .status(UserStatus.ACTIVE.toString())
+                .role(UserRole.CUSTOMER.getValue())
+                .status(UserStatus.ACTIVE.getValue())
                 .build();
 
         // Insert users

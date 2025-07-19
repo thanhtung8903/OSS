@@ -12,6 +12,9 @@ public interface OrderDao {
     @Query("SELECT * FROM orders ORDER BY order_date DESC")
     LiveData<List<Order>> getAllOrders();
 
+    @Query("SELECT * FROM orders ORDER BY order_date DESC")
+    List<Order> getAllOrdersSync();
+
     @Query("SELECT * FROM orders WHERE user_id = :userId ORDER BY order_date DESC")
     LiveData<List<Order>> getOrdersByUser(int userId);
 

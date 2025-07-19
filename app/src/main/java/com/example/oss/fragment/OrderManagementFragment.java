@@ -122,12 +122,7 @@ public class OrderManagementFragment extends Fragment {
         });
 
         btnBackOrderManagement = view.findViewById(R.id.btn_back_order_management);
-        btnBackOrderManagement.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                getActivity().getSupportFragmentManager().popBackStack();
-            }
-        });
+        btnBackOrderManagement.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
 
         chipAll = view.findViewById(R.id.chip_all);
         chipPending = view.findViewById(R.id.chip_pending);

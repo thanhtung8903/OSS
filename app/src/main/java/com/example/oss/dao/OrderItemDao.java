@@ -57,6 +57,14 @@ public interface OrderItemDao {
     @Query("DELETE FROM order_items WHERE order_id = :orderId")
     void deleteOrderItemsByOrderId(int orderId);
 
+    // Method to check if user has purchased a specific product
+    @Query("SELECT COUNT(*) FROM order_items oi " +
+            "INNER JOIN orders o ON oi.order_id = o.id " +
+            "WHERE o.user_id = :userId " +
+            "AND oi.product_id = :productId " +
+            "AND (o.status = 'delivered' OR o.status = 'shipped' OR o.status = 'confirmed')")
+    int hasUserPurchasedProduct(int userId, int productId);
+
     // Inner class cho join query
     public static class OrderItemWithProduct {
         @Embedded
