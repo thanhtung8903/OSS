@@ -39,7 +39,7 @@ public interface OrderDao {
     @Query("SELECT * FROM orders WHERE order_date BETWEEN :startDate AND :endDate ORDER BY order_date DESC")
     LiveData<List<Order>> getOrdersByDateRange(Date startDate, Date endDate);
 
-    @Query("SELECT o.*, u.full_name AS customer_name " +
+    @Query("SELECT o.*, u.full_name AS customer_name, u.email AS  customer_email, u.phone_number AS customer_phone " +
             "From orders o " +
             "INNER JOIN users u ON o.user_id = u.id " +
             "ORDER BY o.order_date DESC")
@@ -66,5 +66,11 @@ public interface OrderDao {
 
         @ColumnInfo(name = "customer_name")
         public String customerName;
+
+        @ColumnInfo(name = "customer_email")
+        public String customerEmail;
+
+        @ColumnInfo(name = "customer_phone")
+        public String customerPhone;
     }
 }

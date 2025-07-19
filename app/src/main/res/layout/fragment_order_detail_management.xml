@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".fragment.OrderDetailManagementFragment">
 
-    <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        xmlns:app="http://schemas.android.com/apk/res-auto"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
@@ -28,15 +28,15 @@
 
                 <ImageView
                     android:id="@+id/btn_back"
-                    android:layout_width="30dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="30dp"
-                    android:src="@drawable/ic_arrow_back"
                     android:layout_marginEnd="16dp"
-                    android:clickable="true"
-                    android:focusable="true"
                     android:background="?android:attr/selectableItemBackgroundBorderless"
+                    android:clickable="true"
+                    android:contentDescription="Quay lại"
+                    android:focusable="true"
                     android:padding="4dp"
-                    android:contentDescription="Quay lại"/>
+                    android:src="@drawable/ic_arrow_back" />
 
                 <TextView
                     android:layout_width="0dp"
@@ -132,118 +132,6 @@
                     app:cardElevation="2dp"
                     app:cardCornerRadius="12dp">
 
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Thông tin khách hàng"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/on_surface"
-                            android:layout_marginBottom="16dp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="12dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_person"
-                                android:layout_marginEnd="12dp"
-                                android:alpha="0.6" />
-
-                            <TextView
-                                android:id="@+id/tv_customer_name_detail"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Nguyễn Văn A"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="12dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_email"
-                                android:layout_marginEnd="12dp"
-                                android:alpha="0.6" />
-
-                            <TextView
-                                android:id="@+id/tv_customer_email"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="nguyenvana@email.com"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="12dp">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_phone"
-                                android:layout_marginEnd="12dp"
-                                android:alpha="0.6" />
-
-                            <TextView
-                                android:id="@+id/tv_customer_phone"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="0123456789"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <ImageView
-                                android:layout_width="20dp"
-                                android:layout_height="20dp"
-                                android:src="@drawable/ic_location"
-                                android:layout_marginEnd="12dp"
-                                android:alpha="0.6" />
-
-                            <TextView
-                                android:id="@+id/tv_customer_address"
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="123 Đường ABC, Quận 1, TP.HCM"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
                 </com.google.android.material.card.MaterialCardView>
 
                 <!-- Order Items -->
@@ -306,54 +194,6 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:orientation="horizontal"
-                            android:layout_marginBottom="8dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Tạm tính:"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface_variant" />
-
-                            <TextView
-                                android:id="@+id/tv_subtotal"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="45,000,000đ"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
-                            android:layout_marginBottom="8dp">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Phí vận chuyển:"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface_variant" />
-
-                            <TextView
-                                android:id="@+id/tv_shipping_fee"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="30,000đ"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface" />
-
-                        </LinearLayout>
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal"
                             android:layout_marginBottom="16dp">
 
                             <TextView
@@ -373,6 +213,95 @@
                                 android:textSize="18sp"
                                 android:textStyle="bold"
                                 android:textColor="@color/primary" />
+
+                        </LinearLayout>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="16dp"
+                                android:text="Thông tin khách hàng"
+                                android:textColor="@color/on_surface"
+                                android:textSize="18sp"
+                                android:textStyle="bold" />
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="12dp"
+                                    android:alpha="0.6"
+                                    android:src="@drawable/ic_person" />
+
+                                <TextView
+                                    android:id="@+id/tv_customer_name_detail"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="Nguyễn Văn A"
+                                    android:textColor="@color/on_surface"
+                                    android:textSize="16sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="12dp"
+                                    android:alpha="0.6"
+                                    android:src="@drawable/ic_email" />
+
+                                <TextView
+                                    android:id="@+id/tv_customer_email"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="nguyenvana@email.com"
+                                    android:textColor="@color/on_surface"
+                                    android:textSize="16sp" />
+
+                            </LinearLayout>
+
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="12dp"
+                                android:orientation="horizontal">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginEnd="12dp"
+                                    android:alpha="0.6"
+                                    android:src="@drawable/ic_phone" />
+
+                                <TextView
+                                    android:id="@+id/tv_customer_phone"
+                                    android:layout_width="0dp"
+                                    android:layout_height="wrap_content"
+                                    android:layout_weight="1"
+                                    android:text="0123456789"
+                                    android:textColor="@color/on_surface"
+                                    android:textSize="16sp" />
+
+                            </LinearLayout>
 
                         </LinearLayout>
 
@@ -406,139 +335,6 @@
 
                         </LinearLayout>
 
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="horizontal">
-
-                            <TextView
-                                android:layout_width="0dp"
-                                android:layout_height="wrap_content"
-                                android:layout_weight="1"
-                                android:text="Trạng thái thanh toán:"
-                                android:textSize="16sp"
-                                android:textColor="@color/on_surface_variant" />
-
-                            <TextView
-                                android:id="@+id/tv_payment_status"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Đã thanh toán"
-                                android:textSize="16sp"
-                                android:textColor="@color/primary" />
-
-                        </LinearLayout>
-
-                    </LinearLayout>
-
-                </com.google.android.material.card.MaterialCardView>
-
-                <!-- Order Timeline -->
-                <com.google.android.material.card.MaterialCardView
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginBottom="24dp"
-                    app:cardElevation="2dp"
-                    app:cardCornerRadius="12dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:orientation="vertical"
-                        android:padding="20dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Lịch sử đơn hàng"
-                            android:textSize="18sp"
-                            android:textStyle="bold"
-                            android:textColor="@color/on_surface"
-                            android:layout_marginBottom="16dp" />
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical">
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_marginBottom="12dp">
-
-                                <View
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:background="@drawable/ic_favorite"
-                                    android:layout_marginEnd="12dp"
-                                    android:layout_gravity="center_vertical" />
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Đơn hàng đã được tạo"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold"
-                                        android:textColor="@color/on_surface" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="15/12/2024 - 14:30"
-                                        android:textSize="12sp"
-                                        android:textColor="@color/on_surface_variant" />
-
-                                </LinearLayout>
-
-                            </LinearLayout>
-
-                            <LinearLayout
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:orientation="horizontal"
-                                android:layout_marginBottom="12dp">
-
-                                <View
-                                    android:layout_width="12dp"
-                                    android:layout_height="12dp"
-                                    android:background="@drawable/ic_favorite"
-                                    android:layout_marginEnd="12dp"
-                                    android:layout_gravity="center_vertical" />
-
-                                <LinearLayout
-                                    android:layout_width="0dp"
-                                    android:layout_height="wrap_content"
-                                    android:layout_weight="1"
-                                    android:orientation="vertical">
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="Thanh toán thành công"
-                                        android:textSize="14sp"
-                                        android:textStyle="bold"
-                                        android:textColor="@color/on_surface" />
-
-                                    <TextView
-                                        android:layout_width="wrap_content"
-                                        android:layout_height="wrap_content"
-                                        android:text="15/12/2024 - 14:35"
-                                        android:textSize="12sp"
-                                        android:textColor="@color/on_surface_variant" />
-
-                                </LinearLayout>
-
-                            </LinearLayout>
-
-                        </LinearLayout>
-
                     </LinearLayout>
 
                 </com.google.android.material.card.MaterialCardView>
@@ -547,33 +343,24 @@
 
         </ScrollView>
 
-        <!-- Bottom Action Buttons -->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:padding="16dp"
-            android:background="@color/surface">
+<!--        &lt;!&ndash; Bottom Action Buttons &ndash;&gt;-->
+<!--        <LinearLayout-->
+<!--            android:layout_width="match_parent"-->
+<!--            android:layout_height="wrap_content"-->
+<!--            android:orientation="horizontal"-->
+<!--            android:padding="16dp"-->
+<!--            android:background="@color/surface">-->
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_update_status_detail"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Cập nhật trạng thái"
-                android:layout_marginEnd="8dp"
-                style="@style/Widget.Material3.Button" />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/btn_update_status_detail"-->
+<!--                android:layout_width="0dp"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_weight="1"-->
+<!--                android:text="Cập nhật trạng thái"-->
+<!--                android:layout_marginEnd="8dp"-->
+<!--                style="@style/Widget.Material3.Button" />-->
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btn_print_invoice"
-                android:layout_width="0dp"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="In hóa đơn"
-                android:layout_marginStart="8dp"
-                style="@style/Widget.Material3.Button.OutlinedButton" />
-
-        </LinearLayout>
+<!--        </LinearLayout>-->
 
     </LinearLayout>
 
