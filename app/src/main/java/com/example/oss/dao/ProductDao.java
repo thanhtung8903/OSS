@@ -80,6 +80,9 @@ public interface ProductDao {
             "AND (:categoryIds IS NULL OR category_id IN (:categoryIds))")
     BigDecimal getMaxPriceForFilter(String searchQuery, List<Integer> categoryIds);
 
+    @Query("SELECT SUM(stock_quantity) FROM products WHERE is_active = 1")
+    int getTotalStockQuantity();
+
     @Insert
     long insertProduct(Product product);
 
