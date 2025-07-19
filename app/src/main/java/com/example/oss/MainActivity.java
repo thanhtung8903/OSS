@@ -60,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
@@ -72,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new WishlistFragment();
             } else if (itemId == R.id.nav_profile) {
                 selectedFragment = new ProfileFragment();
+            } else if (itemId == R.id.nav_admin) {
+                selectedFragment = new AdminFragment();
             }
-
             if (selectedFragment != null) {
                 loadFragment(selectedFragment);
                 return true;
@@ -107,10 +107,16 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateUIForUser(SessionManager.SessionUser user) {
-        // Update bottom navigation or show admin options
-        if (user.getRole() == UserRole.ADMIN) {
-            // Show admin-specific UI
-            // Admin có thể reset sample data nếu cần
+        // Không còn logic menu admin, chỉ dùng menu user
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Đảm bảo tab admin được cập nhật đúng khi quay lại activity
+        SessionManager.SessionUser user = SessionManager.getInstance(this).getCurrentUser();
+        if (user != null) {
+            updateUIForUser(user);
         }
     }
 
