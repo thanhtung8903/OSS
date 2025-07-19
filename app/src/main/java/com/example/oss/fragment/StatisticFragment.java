@@ -24,33 +24,46 @@ public class StatisticFragment extends Fragment {
         View view = inflater.inflate(R.layout.fragment_statistic, container, false);
         toolbarStatistic = view.findViewById(R.id.toolbar_statistic);
         toolbarStatistic.setNavigationOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
-        TextView tvStats = view.findViewById(R.id.tv_stats);
+
+        TextView tvRevenue = view.findViewById(R.id.tv_revenue);
+        TextView tvStock = view.findViewById(R.id.tv_stock);
+        TextView tvOrders = view.findViewById(R.id.tv_orders);
+        TextView tvProducts = view.findViewById(R.id.tv_products);
+        TextView tvCustomers = view.findViewById(R.id.tv_customers);
 
         Executors.newSingleThreadExecutor().execute(() -> {
             Context context = requireContext().getApplicationContext();
-            int userCount = AppDatabase.getDatabase(context).userDao().getUserCountSync();
+            int customerCount = AppDatabase.getDatabase(context).userDao().getCustomerCountSync();
             int productCount = AppDatabase.getDatabase(context).productDao().getAllActiveProductsSync().size();
             int orderCount = AppDatabase.getDatabase(context).orderDao().getAllOrdersSync().size();
             int categoryCount = AppDatabase.getDatabase(context).categoryDao().getCategoryCountSync();
+            int stockQuantity = AppDatabase.getDatabase(context).productDao().getTotalStockQuantity();
 
-            List<com.example.oss.entity.User> allUsers = AppDatabase.getDatabase(context).userDao().getAllUsers().getValue();
-            int customerCount = 0;
-            if (allUsers != null) {
-                for (com.example.oss.entity.User user : allUsers) {
-                    if (!"Admin".equalsIgnoreCase(user.getRole())) {
-                        customerCount++;
+            // Tính tổng doanh thu từ các đơn hàng đã hoàn thành/thanh toán
+            java.math.BigDecimal totalRevenue = java.math.BigDecimal.ZERO;
+            java.util.List<com.example.oss.entity.Order> allOrders = AppDatabase.getDatabase(context).orderDao().getAllOrdersSync();
+            for (com.example.oss.entity.Order order : allOrders) {
+                String status = order.getStatus();
+                if (status != null && (status.equalsIgnoreCase("confirmed") || status.equalsIgnoreCase("shipped") || status.equalsIgnoreCase("delivered") || status.equalsIgnoreCase("đã hoàn thành") || status.equalsIgnoreCase("đã giao"))) {
+                    if (order.getTotalAmount() != null) {
+                        totalRevenue = totalRevenue.add(order.getTotalAmount());
                     }
                 }
-            } else {
-                customerCount = userCount;
             }
 
-            String stats = "Tổng số người dùng: " + customerCount +
-                           "\nTổng số danh mục: " + categoryCount +
-                           "\nTổng số sản phẩm: " + productCount +
-                           "\nTổng số đơn hàng: " + orderCount;
+            String revenueStr = "Doanh thu: " + totalRevenue.toPlainString() + "đ";
+            String stockStr = "Hàng tồn kho: " + stockQuantity;
+            String ordersStr = "Tổng đơn hàng: " + orderCount;
+            String productsStr = "Tổng sản phẩm: " + productCount;
+            String customersStr = "Tổng khách hàng: " + customerCount;
 
-            requireActivity().runOnUiThread(() -> tvStats.setText(stats));
+            requireActivity().runOnUiThread(() -> {
+                tvRevenue.setText(revenueStr);
+                tvStock.setText(stockStr);
+                tvOrders.setText(ordersStr);
+                tvProducts.setText(productsStr);
+                tvCustomers.setText(customersStr);
+            });
         });
 
         return view;

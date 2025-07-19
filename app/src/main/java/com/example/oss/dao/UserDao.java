@@ -42,4 +42,7 @@ public interface UserDao {
 
     @Query("DELETE FROM users")
     void deleteAllUsers();
+
+    @Query("SELECT COUNT(*) FROM users WHERE LOWER(role) = 'customer'")
+    int getCustomerCountSync();
 }
