@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.example.oss.R;
 import com.example.oss.adapter.OrderManagementAdapter;
 import com.example.oss.viewmodel.OrderManagementViewModel;
+import com.google.android.material.chip.Chip;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -38,6 +39,10 @@ public class OrderManagementFragment extends Fragment {
     private OrderManagementViewModel orderViewModel;
     private ImageButton btnBackOrderManagement;
     private TextView tvTotalOrders, tvPendingOrders, tvCompletedOrders;
+
+    private Chip chipAll, chipPending, chipCompleted;
+
+
 
     public OrderManagementFragment() {
         // Required empty public constructor
@@ -88,29 +93,50 @@ public class OrderManagementFragment extends Fragment {
         recyclerOrders.setAdapter(adapter);
 
         orderViewModel = new ViewModelProvider(this).get(OrderManagementViewModel.class);
+
+        orderViewModel.loadAllOrders();
+
         orderViewModel.getOrderDisplays().observe(getViewLifecycleOwner(), orderData -> {
             adapter.updateData(orderData.getOrderDisplays());
+        });
 
-            int total = orderData.getOrderDisplays().size();
-            int pending = 0;
-            int completed = 0;
+        orderViewModel.getAllOrders().observe(getViewLifecycleOwner(), orderData -> {
+            if (orderData != null){
+                int total = orderData.getOrderDisplays().size();
+                int pending = 0;
+                int completed = 0;
 
-            for (com.example.oss.bean.OrderDisplay order : orderData.getOrderDisplays()) {
-                String status = order.getOrderStatus().toLowerCase(); // Hoặc getOrderStatus()
-                if (status.contains("chờ") || status.contains("pending")) {
-                    pending++;
-                } else if (status.contains("hoàn") || status.contains("completed")) {
-                    completed++;
+                for (com.example.oss.bean.OrderDisplay order : orderData.getOrderDisplays()) {
+                    String status = order.getOrderStatus().toLowerCase(); // Hoặc getOrderStatus()
+                    if (status.contains("chờ") || status.contains("pending")) {
+                        pending++;
+                    } else if (status.contains("hoàn") || status.contains("delivered")) {
+                        completed++;
+                    }
                 }
-            }
 
-            tvTotalOrders.setText(String.valueOf(total));
-            tvPendingOrders.setText(String.valueOf(pending));
-            tvCompletedOrders.setText(String.valueOf(completed));
+                tvTotalOrders.setText(String.valueOf(total));
+                tvPendingOrders.setText(String.valueOf(pending));
+                tvCompletedOrders.setText(String.valueOf(completed));
+            }
         });
 
         btnBackOrderManagement = view.findViewById(R.id.btn_back_order_management);
         btnBackOrderManagement.setOnClickListener(v -> requireActivity().getSupportFragmentManager().popBackStack());
+
+        chipAll = view.findViewById(R.id.chip_all);
+        chipPending = view.findViewById(R.id.chip_pending);
+        chipCompleted = view.findViewById(R.id.chip_completed);
+
+        chipAll.setOnClickListener(v -> orderViewModel.setFilterStatus("Tất cả"));
+        chipPending.setOnClickListener(v -> orderViewModel.setFilterStatus("Chờ xử lý"));
+        chipCompleted.setOnClickListener(v -> orderViewModel.setFilterStatus("Hoàn thành"));
+// Thêm nếu có các chip khác như:
+        view.findViewById(R.id.chip_processing).setOnClickListener(v -> orderViewModel.setFilterStatus("Đang xử lý"));
+        view.findViewById(R.id.chip_shipped).setOnClickListener(v -> orderViewModel.setFilterStatus("Đã giao hàng"));
+        view.findViewById(R.id.chip_cancelled).setOnClickListener(v -> orderViewModel.setFilterStatus("Đã hủy"));
+
+
         return view;
     }
 }

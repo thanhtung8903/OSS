@@ -1,8 +1,11 @@
 package com.example.oss.repository;
 
 import android.app.Application;
+
+import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MediatorLiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.Observer;
 
 import com.example.oss.bean.OrderData;
@@ -48,89 +51,94 @@ public class OrderRepository {
         return orderDao.getOrdersByUser(userId);
     }
 
-    public LiveData<OrderData> getAllOrderManagementDisplays() {
+    public LiveData<OrderData> getAllOrderManagementDisplays(@Nullable String filterStatus) {
         MediatorLiveData<OrderData> result = new MediatorLiveData<>();
 
         // Lấy danh sách Orders kèm thông tin khách hàng
         LiveData<List<OrderDao.OrdersWithCustomer>> ordersLiveData = orderDao.getOrdersWithCustomer();
 
-        ordersLiveData.observeForever(new Observer<>() {
-            @Override
-            public void onChanged(List<OrderDao.OrdersWithCustomer> ordersWithCustomers) {
-                // Remove để tránh gọi lại không cần thiết
-                ordersLiveData.removeObserver(this);
+        result.addSource(ordersLiveData, ordersWithCustomers -> {
+            if (ordersWithCustomers == null || ordersWithCustomers.isEmpty()) {
+                result.setValue(new OrderData(new ArrayList<>(), new OrderStatistics(0, 0, 0)));
+                return;
+            }
 
-                if (ordersWithCustomers == null || ordersWithCustomers.isEmpty()) {
-                    result.setValue(new OrderData(new ArrayList<>(), new OrderStatistics(0, 0, 0)));
-                    return;
-                }
-
-                List<com.example.oss.bean.OrderDisplay> tempList = Collections.synchronizedList(new ArrayList<>());
-                AtomicInteger loadedCount = new AtomicInteger(0);
-                int totalOrders = ordersWithCustomers.size();
-
-                // Sử dụng AtomicInteger để lưu trữ thống kê
-                AtomicInteger pendingOrders = new AtomicInteger(0);
-                AtomicInteger completedOrders = new AtomicInteger(0);
-
-                for (OrderDao.OrdersWithCustomer orderWithCustomer : ordersWithCustomers) {
-                    int orderId = orderWithCustomer.order.getId();
-                    LiveData<List<OrderItemDao.OrderItemWithProduct>> itemsLiveData = orderItemDao.getOrderItemsWithProduct(orderId);
-
-                    itemsLiveData.observeForever(new Observer<>() {
-                        @Override
-                        public void onChanged(List<OrderItemDao.OrderItemWithProduct> orderItems) {
-                            // Gỡ observer để tránh memory leak
-                            itemsLiveData.removeObserver(this);
-
-                            com.example.oss.bean.OrderDisplay display = new com.example.oss.bean.OrderDisplay();
-                            display.orderId = orderWithCustomer.order.getId();
-                            display.orderDate = orderWithCustomer.order.getOrderDate();
-                            display.orderStatus = orderWithCustomer.order.getStatus();
-                            display.customerName = orderWithCustomer.customerName;
-                            display.totalAmount = orderWithCustomer.order.getTotalAmount();
-                            display.paymentMethod = orderWithCustomer.order.getPaymentMethod();
-
-                            display.itemCount = 0;
-                            StringBuilder sb = new StringBuilder();
-                            for (OrderItemDao.OrderItemWithProduct item : orderItems) {
-                                sb.append(item.productName)
-                                        .append(" (x")
-                                        .append(item.orderItem.getQuantity())
-                                        .append("), ");
-                                display.itemCount += item.orderItem.getQuantity();
-                            }
-
-                            if (sb.length() > 0) {
-                                sb.setLength(sb.length() - 2); // Xóa dấu ", " cuối cùng
-                            }
-
-                            display.productSummary = sb.toString();
-                            tempList.add(display);
-
-                            switch (orderWithCustomer.order.getStatus()){
-                                case "Chờ xử lý":
-                                    pendingOrders.incrementAndGet();
-                                    break;
-                                case "Đã hoàn thành":
-                                    completedOrders.incrementAndGet();
-                                    break;
-                                    // thêm các trạng thái khác nếu cần
-                            }
-
-                            // Khi đã xử lý đủ tất cả đơn hàng
-                            if (loadedCount.incrementAndGet() == totalOrders) {
-                                OrderStatistics statistics = new OrderStatistics(totalOrders, pendingOrders.get(), completedOrders.get());
-
-                                OrderData orderData = new OrderData(new ArrayList<>(tempList), statistics);
-                                result.setValue(orderData);
-                            }
-                        }
-                    });
+            // Áp dụng filter nếu cần
+            List<OrderDao.OrdersWithCustomer> filteredList;
+            if (filterStatus == null || filterStatus.equals("Tất cả")) {
+                filteredList = ordersWithCustomers;
+            } else {
+                filteredList = new ArrayList<>();
+                for (OrderDao.OrdersWithCustomer order : ordersWithCustomers) {
+                    if (filterStatus.equals(order.order.getStatus())) {
+                        filteredList.add(order);
+                    }
                 }
             }
-        });
 
+            if (filteredList.isEmpty()) {
+                result.setValue(new OrderData(new ArrayList<>(), new OrderStatistics(0, 0, 0)));
+                return;
+            }
+
+            List<com.example.oss.bean.OrderDisplay> tempList = Collections.synchronizedList(new ArrayList<>());
+            AtomicInteger loadedCount = new AtomicInteger(0);
+            int totalOrders = filteredList.size();
+            AtomicInteger pendingOrders = new AtomicInteger(0);
+            AtomicInteger completedOrders = new AtomicInteger(0);
+
+            for (OrderDao.OrdersWithCustomer orderWithCustomer : filteredList){
+                int orderId = orderWithCustomer.order.getId();
+                LiveData<List<OrderItemDao.OrderItemWithProduct>> itemsLiveData = orderItemDao.getOrderItemsWithProduct(orderId);
+
+                result.addSource(itemsLiveData, orderItems -> {
+                    result.removeSource(itemsLiveData); // tránh leak
+
+                    com.example.oss.bean.OrderDisplay display = new com.example.oss.bean.OrderDisplay();
+                    display.orderId = orderWithCustomer.order.getId();
+                    display.orderDate = orderWithCustomer.order.getOrderDate();
+                    display.orderStatus = orderWithCustomer.order.getStatus();
+                    display.customerName = orderWithCustomer.customerName;
+                    display.customerEmail = orderWithCustomer.customerEmail;
+                    display.customerPhone = orderWithCustomer.customerPhone;
+                    display.productList = new ArrayList<>(orderItems);
+                    display.totalAmount = orderWithCustomer.order.getTotalAmount();
+                    display.paymentMethod = orderWithCustomer.order.getPaymentMethod();
+
+                    display.itemCount = 0;
+                    StringBuilder sb = new StringBuilder();
+                    for (OrderItemDao.OrderItemWithProduct item : orderItems) {
+                        sb.append(item.productName)
+                                .append(" (x")
+                                .append(item.orderItem.getQuantity())
+                                .append("), ");
+                        display.itemCount += item.orderItem.getQuantity();
+                    }
+
+                    if (sb.length() > 0) {
+                        sb.setLength(sb.length() - 2);
+                    }
+
+                    display.productSummary = sb.toString();
+                    tempList.add(display);
+
+                    // Thống kê
+                    switch (orderWithCustomer.order.getStatus()) {
+                        case "Chờ xử lý":
+                            pendingOrders.incrementAndGet();
+                            break;
+                        case "Đã hoàn thành":
+                            completedOrders.incrementAndGet();
+                            break;
+                    }
+
+                    if (loadedCount.incrementAndGet() == totalOrders) {
+                        OrderStatistics statistics = new OrderStatistics(totalOrders, pendingOrders.get(), completedOrders.get());
+                        result.setValue(new OrderData(new ArrayList<>(tempList), statistics));
+                    }
+                });
+            }
+        });
         return result;
     }
 

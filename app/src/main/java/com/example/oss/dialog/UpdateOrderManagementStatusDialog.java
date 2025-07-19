@@ -1,79 +1,90 @@
 package com.example.oss.dialog;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.Fragment;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
+import android.widget.TextView;
 
 import com.example.oss.R;
+import com.example.oss.bean.OrderDisplay;
+import com.google.android.material.button.MaterialButton;
+import com.google.android.material.textfield.TextInputEditText;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link UpdateOrderManagementStatusDialog#newInstance} factory method to
- * create an instance of this fragment.
- */
+import java.text.NumberFormat;
+import java.util.Locale;
+
+
 public class UpdateOrderManagementStatusDialog extends DialogFragment {
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private OrderDisplay order;
+    private OnStatusUpdatedListener listener;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public UpdateOrderManagementStatusDialog() {
-        // Required empty public constructor
+    public interface OnStatusUpdatedListener{
+        void onStatusUpdated(OrderDisplay order, String newStatus, String note);
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UpdateOrderManagementStatusDialog.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static UpdateOrderManagementStatusDialog newInstance(String param1, String param2) {
-        UpdateOrderManagementStatusDialog fragment = new UpdateOrderManagementStatusDialog();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public UpdateOrderManagementStatusDialog(OrderDisplay order, OnStatusUpdatedListener listener){
+        this.order = order;
+        this.listener = listener;
     }
 
+    @NonNull
     @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
+    public Dialog onCreateDialog(@Nullable Bundle savedInstanceState) {
+        View view = LayoutInflater.from(requireContext()).inflate(R.layout.dialog_update_order_management_status, null);
+
+        TextView tvOrderId = view.findViewById(R.id.tv_dialog_order_id);
+        TextView tvCustomerName = view.findViewById(R.id.tv_dialog_customer_name);
+        TextView tvTotalAmount = view.findViewById(R.id.tv_dialog_total_amount);
+        TextView tvCurrentStatus = view.findViewById(R.id.tv_current_status);
+        RadioGroup radioGroup = view.findViewById(R.id.radio_group_status);
+        for (int i = 0; i < radioGroup.getChildCount(); i++) {
+            View child = radioGroup.getChildAt(i);
+            if (child instanceof RadioButton) {
+                RadioButton radioButton = (RadioButton) child;
+                String statusTag = String.valueOf(radioButton.getTag()); // lấy tag gán trong XML
+                if (statusTag.equalsIgnoreCase(order.orderStatus)) {
+                    radioButton.setChecked(true); // check radio button tương ứng
+                    break;
+                }
+            }
         }
-    }
+        TextInputEditText etNote = view.findViewById(R.id.et_status_note);
 
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.dialog_update_order_management_status, container, false);
-    }
+        tvOrderId.setText("Đơn hàng #" + order.orderId);
+        tvCustomerName.setText("Khách hàng: " + order.customerName);
+        tvTotalAmount.setText("Tổng tiền: " + NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(order.totalAmount));
+        tvCurrentStatus.setText(order.orderStatus);
 
-    @Override
-    public void onStart() {
-        super.onStart();
-        Dialog dialog = getDialog();
-        if (dialog != null) {
-            int width = (int) (getResources().getDisplayMetrics().widthPixels * 0.9);
-            int height = ViewGroup.LayoutParams.WRAP_CONTENT;
-            dialog.getWindow().setLayout(width, height);
-        }
+        MaterialButton btnCancel = view.findViewById(R.id.btn_cancel_status);
+        MaterialButton btnUpdate = view.findViewById(R.id.btn_update_status);
+
+        btnCancel.setOnClickListener(v -> dismiss());
+
+        btnUpdate.setOnClickListener(v -> {
+            int selectedId = radioGroup.getCheckedRadioButtonId();
+            if (selectedId != -1) {
+                RadioButton rb = view.findViewById(selectedId);
+                String newStatus = rb.getText().toString();
+                String note = etNote.getText().toString();
+                listener.onStatusUpdated(order, newStatus, note);
+                dismiss();
+            }
+        });
+
+        return new AlertDialog.Builder(requireContext())
+                .setView(view)
+                .create();
     }
 }
