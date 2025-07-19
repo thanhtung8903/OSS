@@ -39,4 +39,7 @@ public interface ReviewDao {
 
     @Query("DELETE FROM reviews WHERE id = :reviewId")
     void deleteReviewById(int reviewId);
+
+    @Query("DELETE FROM reviews")
+    void deleteAll();
 }
