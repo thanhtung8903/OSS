@@ -30,7 +30,10 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
+
+//        Intent intent = new Intent(this, UserManagementActivity.class);
+//        startActivity(intent);
+
         // Initialize SampleDataManager và load sample data
         initializeSampleData();
         // Initialize ViewModel
@@ -57,7 +60,6 @@ public class MainActivity extends AppCompatActivity {
     private void setupBottomNavigation() {
         bottomNavigationView.setOnItemSelectedListener(item -> {
             Fragment selectedFragment = null;
-
             int itemId = item.getItemId();
             if (itemId == R.id.nav_home) {
                 selectedFragment = new HomeFragment();
@@ -69,8 +71,9 @@ public class MainActivity extends AppCompatActivity {
                 selectedFragment = new WishlistFragment();
             } else if (itemId == R.id.nav_profile) {
                 selectedFragment = new ProfileFragment();
+            } else if (itemId == R.id.nav_admin) {
+                selectedFragment = new AdminFragment();
             }
-
             if (selectedFragment != null) {
                 loadFragment(selectedFragment);
                 return true;
@@ -101,7 +104,9 @@ public class MainActivity extends AppCompatActivity {
                 android.util.Log.d("MainActivity", "Current user: " + user.getFullName() + " - Role: " + user.getRole());
             }
         });
-    }private void updateUIForUser(SessionManager.SessionUser user) {
+    }
+  
+    private void updateUIForUser(SessionManager.SessionUser user) {
         // Update bottom navigation or show admin options
         if (user.getRole() == UserRole.ADMIN) {
             // Show admin-specific UI
@@ -112,6 +117,17 @@ public class MainActivity extends AppCompatActivity {
             // Customer - hiển thị HomeFragment
             loadFragment(new HomeFragment());
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
+    }
+
+   
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        // Đảm bảo tab admin được cập nhật đúng khi quay lại activity
+        SessionManager.SessionUser user = SessionManager.getInstance(this).getCurrentUser();
+        if (user != null) {
+            updateUIForUser(user);
         }
     }    /**
      * Method để force reset sample data (dành cho admin hoặc testing)

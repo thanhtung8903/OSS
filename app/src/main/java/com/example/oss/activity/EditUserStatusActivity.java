@@ -23,7 +23,7 @@ public class EditUserStatusActivity extends AppCompatActivity {
     private Button btnSave, btnCancel;
     private int userId;
     private String[] statusOptions;
-    private String[] statusDisplayNames = {"Active", "Inactive", "Banned"};
+    private String[] statusDisplayNames = {"Active", "Banned"};
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,7 +46,7 @@ public class EditUserStatusActivity extends AppCompatActivity {
         btnCancel = findViewById(R.id.btnCancel);
 
         // Lấy giá trị enum động
-        UserStatus[] statuses = UserStatus.values();
+        UserStatus[] statuses = {UserStatus.ACTIVE, UserStatus.BANNED};
         statusOptions = new String[statuses.length];
         for (int i = 0; i < statuses.length; i++) {
             statusOptions[i] = statuses[i].getValue();
