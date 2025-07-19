@@ -26,13 +26,15 @@ public class MainActivity extends AppCompatActivity {
 
     private BottomNavigationView bottomNavigationView;
     private AuthViewModel authViewModel;
-    private SampleDataManager sampleDataManager;    @Override
+    private SampleDataManager sampleDataManager;
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Intent intent = new Intent(this, UserManagementActivity.class);
-//        startActivity(intent);
+        // Intent intent = new Intent(this, UserManagementActivity.class);
+        // startActivity(intent);
 
         // Initialize SampleDataManager và load sample data
         initializeSampleData();
@@ -87,7 +89,9 @@ public class MainActivity extends AppCompatActivity {
                 .beginTransaction()
                 .replace(R.id.fragment_container, fragment)
                 .commit();
-    }    private void setupObservers() {
+    }
+
+    private void setupObservers() {
         // Observe authentication state
         authViewModel.getIsLoggedIn().observe(this, isLoggedIn -> {
             // Update UI based on login state
@@ -96,16 +100,17 @@ public class MainActivity extends AppCompatActivity {
                 // User is logged in, reload initial fragment based on role
                 loadInitialFragment();
             }
-        });        // Observe current user - chỉ để debug, không dùng để redirect
+        }); // Observe current user - chỉ để debug, không dùng để redirect
         authViewModel.getCurrentUser().observe(this, user -> {
             if (user != null) {
                 // Update UI with user info - không redirect ở đây để tránh conflict
                 // Log thông tin user để debug
-                android.util.Log.d("MainActivity", "Current user: " + user.getFullName() + " - Role: " + user.getRole());
+                android.util.Log.d("MainActivity",
+                        "Current user: " + user.getFullName() + " - Role: " + user.getRole());
             }
         });
     }
-  
+
     private void updateUIForUser(SessionManager.SessionUser user) {
         // Update bottom navigation or show admin options
         if (user.getRole() == UserRole.ADMIN) {
@@ -117,9 +122,8 @@ public class MainActivity extends AppCompatActivity {
             // Customer - hiển thị HomeFragment
             loadFragment(new HomeFragment());
             bottomNavigationView.setSelectedItemId(R.id.nav_home);
+        }
     }
-
-   
 
     @Override
     protected void onResume() {
@@ -129,7 +133,9 @@ public class MainActivity extends AppCompatActivity {
         if (user != null) {
             updateUIForUser(user);
         }
-    }    /**
+    }
+
+    /**
      * Method để force reset sample data (dành cho admin hoặc testing)
      */
     public void resetSampleData() {
@@ -157,18 +163,20 @@ public class MainActivity extends AppCompatActivity {
         sampleDataManager = new SampleDataManager(this);
         // Chạy async để không block UI
         sampleDataManager.initializeSampleData();
-    }    // Method để load fragment ban đầu dựa trên role
+    } // Method để load fragment ban đầu dựa trên role
+
     private void loadInitialFragment() {
         SessionManager sessionManager = SessionManager.getInstance(this);
-        
+
         // Debug log
         android.util.Log.d("MainActivity", "loadInitialFragment - isLoggedIn: " + sessionManager.isLoggedIn());
-        
+
         if (sessionManager.isLoggedIn()) {
             SessionManager.SessionUser currentUser = sessionManager.getCurrentUser();
             if (currentUser != null) {
-                android.util.Log.d("MainActivity", "Current user: " + currentUser.getFullName() + " - Role: " + currentUser.getRole() + " - Email: " + currentUser.getEmail());
-                
+                android.util.Log.d("MainActivity", "Current user: " + currentUser.getFullName() + " - Role: "
+                        + currentUser.getRole() + " - Email: " + currentUser.getEmail());
+
                 if (currentUser.getRole() == UserRole.ADMIN) {
                     // Nếu là admin, load AdminFragment
                     android.util.Log.d("MainActivity", "Loading AdminFragment for admin user");
