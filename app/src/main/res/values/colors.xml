@@ -113,4 +113,9 @@
 
     <!--Product Status-->
     <color name="green">#388E3C</color>
+    
+    <!-- Additional colors for layout compatibility -->
+    <color name="background_color">@color/surface</color>
+    <color name="text_primary">@color/on_surface</color>
+    <color name="text_secondary">@color/on_surface_variant</color>
 </resources>

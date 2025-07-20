@@ -27,6 +27,7 @@ public class AuthViewModel extends AndroidViewModel {
     private MutableLiveData<SessionManager.SessionUser> currentUser;
     private MutableLiveData<LoginResult> loginResult;
     private MutableLiveData<Boolean> updateSuccess;
+    private MutableLiveData<ForgotPasswordResult> forgotPasswordResult;
 
     // LoginResult class to encapsulate login response
     public static class LoginResult {
@@ -34,6 +35,25 @@ public class AuthViewModel extends AndroidViewModel {
         private String errorMessage;
 
         public LoginResult(boolean success, String errorMessage) {
+            this.success = success;
+            this.errorMessage = errorMessage;
+        }
+
+        public boolean isSuccess() {
+            return success;
+        }
+
+        public String getErrorMessage() {
+            return errorMessage;
+        }
+    }
+
+    // ForgotPasswordResult class to encapsulate forgot password response
+    public static class ForgotPasswordResult {
+        private boolean success;
+        private String errorMessage;
+
+        public ForgotPasswordResult(boolean success, String errorMessage) {
             this.success = success;
             this.errorMessage = errorMessage;
         }
@@ -60,6 +80,7 @@ public class AuthViewModel extends AndroidViewModel {
         currentUser = new MutableLiveData<>(sessionManager.getLoggedInUser());
         loginResult = new MutableLiveData<>();
         updateSuccess = new MutableLiveData<>();
+        forgotPasswordResult = new MutableLiveData<>();
     }
 
     // Getters for LiveData
@@ -89,6 +110,10 @@ public class AuthViewModel extends AndroidViewModel {
 
     public LiveData<Boolean> getUpdateSuccess() {
         return updateSuccess;
+    }
+
+    public LiveData<ForgotPasswordResult> getForgotPasswordResult() {
+        return forgotPasswordResult;
     }
 
     // Login method
@@ -223,10 +248,10 @@ public class AuthViewModel extends AndroidViewModel {
             return false;
         }
 
-//        if (!SecurityUtils.isValidEmail(email)) {
-//            errorMessage.postValue("Email không hợp lệ");
-//            return false;
-//        }
+        // if (!SecurityUtils.isValidEmail(email)) {
+        // errorMessage.postValue("Email không hợp lệ");
+        // return false;
+        // }
 
         if (password == null || password.isEmpty()) {
             errorMessage.postValue("Mật khẩu không được để trống");
@@ -385,5 +410,53 @@ public class AuthViewModel extends AndroidViewModel {
                 isLoading.postValue(false);
             }
         });
+    }
+
+    // Forgot password method
+    public void sendResetPasswordEmail(String email) {
+        if (!validateForgotPasswordInput(email)) {
+            return;
+        }
+
+        isLoading.postValue(true);
+        errorMessage.postValue(null);
+        forgotPasswordResult.postValue(null);
+
+        Future<Boolean> resetFuture = userRepository.resetPassword(email);
+
+        new Thread(() -> {
+            try {
+                Boolean success = resetFuture.get();
+                isLoading.postValue(false);
+
+                if (success) {
+                    forgotPasswordResult.postValue(new ForgotPasswordResult(true, null));
+                } else {
+                    String message = "Email không tồn tại trong hệ thống";
+                    errorMessage.postValue(message);
+                    forgotPasswordResult.postValue(new ForgotPasswordResult(false, message));
+                }
+            } catch (Exception e) {
+                isLoading.postValue(false);
+                String message = "Lỗi khi gửi email: " + e.getMessage();
+                errorMessage.postValue(message);
+                forgotPasswordResult.postValue(new ForgotPasswordResult(false, message));
+            }
+        }).start();
+    }
+
+    // Validation for forgot password
+    private boolean validateForgotPasswordInput(String email) {
+        if (email == null || email.trim().isEmpty()) {
+            errorMessage.postValue("Email không được để trống");
+            return false;
+        }
+
+        if (!SecurityUtils.isValidEmail(email)) {
+            errorMessage.postValue("Email không hợp lệ");
+            return false;
+        }
+
+        return true;
     }
 }

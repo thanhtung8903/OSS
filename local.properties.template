@@ -1,0 +1,15 @@
+## Template file for local.properties
+# Copy this file to local.properties and fill in your actual values
+# local.properties is gitignored so your secrets will be safe
+
+# SDK Location (thường được Android Studio tự tạo)
+sdk.dir=YOUR_SDK_PATH_HERE
+
+# Mailgun API Key - thay thế bằng API key thực của bạn
+# Lấy từ: https://app.mailgun.com/app/account/security/api_keys
+MAILGUN_API_KEY=your_mailgun_api_key_here
+
+# Hướng dẫn:
+# 1. Copy file này thành local.properties
+# 2. Thay thế các giá trị placeholder bằng giá trị thực
+# 3. local.properties sẽ không được push lên git (đã có trong .gitignore) 

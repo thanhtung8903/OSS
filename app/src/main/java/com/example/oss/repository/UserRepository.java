@@ -169,4 +169,52 @@ public class UserRepository {
             return false;
         }
     }
+
+    // Reset password methods
+    public Future<Boolean> resetPassword(String email) {
+        return executor.submit(() -> {
+            try {
+                // Kiểm tra email có tồn tại không
+                User user = userDao.getUserByEmail(email);
+                if (user == null) {
+                    return false;
+                }
+
+                // Tạo mật khẩu mới
+                String newPassword = SecurityUtils.generateRandomPassword();
+
+                // Hash mật khẩu mới và cập nhật trong database
+                String hashedPassword = SecurityUtils.hashPassword(newPassword);
+                user.setPassword(hashedPassword);
+                userDao.updateUser(user);
+
+                // Gửi email với mật khẩu mới
+                boolean emailSent = com.example.oss.util.MailGun.sendResetPasswordEmail(
+                        user.getEmail(),
+                        user.getFullName(),
+                        newPassword);
+
+                if (!emailSent) {
+                    android.util.Log.e("UserRepository", "Failed to send reset email to: " + user.getEmail());
+                    return false;
+                }
+
+                return true;
+            } catch (Exception e) {
+                e.printStackTrace();
+                return false;
+            }
+        });
+    }
+
+    // Method để lấy user theo email cho forgot password
+    public Future<User> getUserByEmail(String email) {
+        return executor.submit(() -> {
+            try {
+                return userDao.getUserByEmail(email);
+            } catch (Exception e) {
+                return null;
+            }
+        });
+    }
 }

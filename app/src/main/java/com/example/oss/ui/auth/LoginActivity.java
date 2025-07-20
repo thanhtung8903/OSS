@@ -29,7 +29,7 @@ public class LoginActivity extends AppCompatActivity {
     private TextInputEditText etEmail, etPassword;
     private MaterialButton btnLogin;
     private MaterialCheckBox cbRememberMe;
-    private TextView tvRegister;
+    private TextView tvRegister, tvForgotPassword;
 
     // ViewModel
     private AuthViewModel authViewModel;
@@ -63,6 +63,7 @@ public class LoginActivity extends AppCompatActivity {
         btnLogin = findViewById(R.id.btn_login);
         cbRememberMe = findViewById(R.id.cb_remember_me);
         tvRegister = findViewById(R.id.tv_register);
+        tvForgotPassword = findViewById(R.id.tv_forgot_password);
     }
 
     private void setupListeners() {
@@ -71,6 +72,12 @@ public class LoginActivity extends AppCompatActivity {
         tvRegister.setOnClickListener(v -> {
             Log.d("LoginActivity", "Register button clicked!");
             Intent intent = new Intent(LoginActivity.this, RegisterActivity.class);
+            startActivity(intent);
+        });
+
+        tvForgotPassword.setOnClickListener(v -> {
+            Log.d("LoginActivity", "Forgot password clicked!");
+            Intent intent = new Intent(LoginActivity.this, com.example.oss.ui.auth.ForgotPasswordActivity.class);
             startActivity(intent);
         });
     }
@@ -126,19 +133,19 @@ public class LoginActivity extends AppCompatActivity {
             tilEmail.setError("Vui lòng nhập email");
             isValid = false;
         }
-//        else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-//            tilEmail.setError("Email không hợp lệ");
-//            isValid = false;
-//        }
+        // else if (!android.util.Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+        // tilEmail.setError("Email không hợp lệ");
+        // isValid = false;
+        // }
 
         if (TextUtils.isEmpty(password)) {
             tilPassword.setError("Vui lòng nhập mật khẩu");
             isValid = false;
         }
-//        else if (password.length() < 6) {
-//            tilPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
-//            isValid = false;
-//        }
+        // else if (password.length() < 6) {
+        // tilPassword.setError("Mật khẩu phải có ít nhất 6 ký tự");
+        // isValid = false;
+        // }
 
         return isValid;
     }

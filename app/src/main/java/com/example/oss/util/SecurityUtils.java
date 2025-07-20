@@ -178,4 +178,57 @@ public class SecurityUtils {
         String emailPattern = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
         return email.matches(emailPattern);
     }
+
+    /**
+     * Generate random password với ít nhất 1 chữ hoa, 1 chữ thường, 1 số, 1 ký tự
+     * đặc biệt
+     * 
+     * @param length Độ dài mật khẩu (tối thiểu 8)
+     * @return Mật khẩu ngẫu nhiên
+     */
+    public static String generateRandomPassword(int length) {
+        if (length < 8) {
+            length = 8; // Đảm bảo độ dài tối thiểu
+        }
+
+        String upperChars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerChars = "abcdefghijklmnopqrstuvwxyz";
+        String numberChars = "0123456789";
+        String specialChars = "!@#$%^&*";
+        String allChars = upperChars + lowerChars + numberChars + specialChars;
+
+        SecureRandom random = new SecureRandom();
+        StringBuilder password = new StringBuilder();
+
+        // Đảm bảo có ít nhất 1 ký tự mỗi loại
+        password.append(upperChars.charAt(random.nextInt(upperChars.length())));
+        password.append(lowerChars.charAt(random.nextInt(lowerChars.length())));
+        password.append(numberChars.charAt(random.nextInt(numberChars.length())));
+        password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        // Điền phần còn lại
+        for (int i = 4; i < length; i++) {
+            password.append(allChars.charAt(random.nextInt(allChars.length())));
+        }
+
+        // Trộn lại thứ tự
+        char[] passwordArray = password.toString().toCharArray();
+        for (int i = passwordArray.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = passwordArray[i];
+            passwordArray[i] = passwordArray[j];
+            passwordArray[j] = temp;
+        }
+
+        return new String(passwordArray);
+    }
+
+    /**
+     * Generate random password với độ dài mặc định 10 ký tự
+     * 
+     * @return Mật khẩu ngẫu nhiên 10 ký tự
+     */
+    public static String generateRandomPassword() {
+        return generateRandomPassword(10);
+    }
 }

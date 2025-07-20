@@ -14,6 +14,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.OSS"
+        android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
             android:name=".activity.AddProductActivity"
@@ -24,6 +25,12 @@
         <activity
             android:name=".ui.auth.LoginActivity"
             android:exported="false" />
+        <activity
+            android:name=".ui.auth.ForgotPasswordActivity"
+            android:exported="false"
+            android:parentActivityName=".ui.auth.LoginActivity"
+            android:theme="@style/Theme.OSS"
+            android:windowSoftInputMode="adjustResize" />
         <activity
             android:name=".MainActivity"
             android:exported="true">

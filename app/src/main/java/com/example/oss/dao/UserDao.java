@@ -10,7 +10,6 @@ public interface UserDao {
     @Query("SELECT * FROM users WHERE LOWER(role) = 'customer' ORDER BY created_at DESC")
     LiveData<List<User>> getAllUsers();
 
-
     @Query("SELECT * FROM users WHERE id = :id")
     LiveData<User> getUserById(int id);
 

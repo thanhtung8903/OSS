@@ -2,9 +2,18 @@ plugins {
     alias(libs.plugins.android.application)
 }
 
+// Đọc local.properties để lấy API keys
+def localPropertiesFile = rootProject.file("local.properties")
+def localProperties = new Properties()
+localProperties.load(new FileInputStream(localPropertiesFile))
+
 android {
     namespace 'com.example.oss'
     compileSdk 35
+    
+    buildFeatures {
+        buildConfig = true
+    }
 
     defaultConfig {
         applicationId "com.example.oss"
@@ -14,6 +23,9 @@ android {
         versionName "1.0"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        
+        // Thêm API key từ local.properties
+        buildConfigField "String", "MAILGUN_API_KEY", "\"${localProperties.getProperty('MAILGUN_API_KEY', 'default_key')}\""
     }
 
     buildTypes {
@@ -25,6 +37,12 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_11
         targetCompatibility JavaVersion.VERSION_11
+    }
+    
+    packaging {
+        resources {
+            excludes += ['META-INF/DEPENDENCIES', 'META-INF/LICENSE', 'META-INF/LICENSE.txt', 'META-INF/NOTICE', 'META-INF/NOTICE.txt']
+        }
     }
     
     lintOptions {
@@ -58,6 +76,9 @@ dependencies {
 
     // Material Design
     implementation 'com.google.android.material:material:1.11.0'
+
+    // Thay Unirest bằng OkHttp để tránh lỗi SSL trên Android
+    implementation 'com.squareup.okhttp3:okhttp:4.12.0'
 
     testImplementation libs.junit
     androidTestImplementation libs.ext.junit
