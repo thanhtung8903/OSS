@@ -19,6 +19,8 @@ import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import com.example.oss.entity.Address;
+import com.example.oss.viewmodel.AddressViewModel;
 
 public class OrderDetailActivity extends AppCompatActivity {
 
@@ -33,6 +35,7 @@ public class OrderDetailActivity extends AppCompatActivity {
     private OrderViewModel orderViewModel;
     private OrderDetailAdapter orderDetailAdapter;
     private int orderId;
+    private AddressViewModel addressViewModel;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,6 +82,7 @@ public class OrderDetailActivity extends AppCompatActivity {
 
     private void setupViewModel() {
         orderViewModel = new ViewModelProvider(this).get(OrderViewModel.class);
+        addressViewModel = new ViewModelProvider(this).get(AddressViewModel.class);
     }
 
     private void setupRecyclerView() {
@@ -120,8 +124,27 @@ public class OrderDetailActivity extends AppCompatActivity {
         tvOrderStatus.setText(getStatusText(order.getStatus()));
         tvOrderStatus.setBackgroundResource(getStatusBackground(order.getStatus()));
 
-        // TODO: Load shipping address from Address entity using shippingAddressId
-        tvShippingAddress.setText("123 Đường ABC, Quận 1, TP.HCM");
+        // Lấy địa chỉ giao hàng từ AddressViewModel
+        Integer shippingAddressId = order.getShippingAddressId();
+        if (shippingAddressId != null) {
+            addressViewModel.getAddressById(shippingAddressId).observe(this, address -> {
+                if (address != null) {
+                    StringBuilder addressText = new StringBuilder();
+                    addressText.append(address.getReceiverName());
+                    if (address.getPhoneNumber() != null && !address.getPhoneNumber().isEmpty()) {
+                        addressText.append(" - ").append(address.getPhoneNumber());
+                    }
+                    addressText.append("\n");
+                    addressText.append(address.getFullAddress());
+                    tvShippingAddress.setText(addressText.toString());
+                } else {
+                    tvShippingAddress.setText("[Địa chỉ không tồn tại]");
+                }
+            });
+        } else {
+            tvShippingAddress.setText("[Không có địa chỉ giao hàng]");
+        }
+
         tvPaymentMethod.setText(order.getPaymentMethod());
 
         NumberFormat currencyFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
