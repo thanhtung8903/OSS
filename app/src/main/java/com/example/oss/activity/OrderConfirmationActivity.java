@@ -59,10 +59,9 @@ public class OrderConfirmationActivity extends AppCompatActivity {
 
     private void setupListeners() {
         btnViewOrder.setOnClickListener(v -> {
-            // TODO: Navigate to order details
-            // Intent intent = new Intent(this, OrderDetailActivity.class);
-            // intent.putExtra("order_id", orderId);
-            // startActivity(intent);
+            Intent intent = new Intent(this, OrderDetailActivity.class);
+            intent.putExtra("order_id", orderId);
+            startActivity(intent);
             finish();
         });
 
